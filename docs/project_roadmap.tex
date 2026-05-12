@@ -1,0 +1,73 @@
+\documentclass[10pt]{article}
+
+\setlength{\topmargin}{-0.85in}
+\setlength{\oddsidemargin}{-0.2in}
+\setlength{\evensidemargin}{-0.2in}
+\setlength{\textwidth}{6.9in}
+\setlength{\textheight}{10.1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.25em}
+
+\let\olditemize\itemize
+\renewcommand{\itemize}{\olditemize\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{Project Roadmap}}\\
+    \vspace{0.2em}
+    {\large OpenAlex AI Research Paper Database Comparison}
+\end{center}
+
+\textbf{Recommended repository name}
+
+\texttt{openalex-ai-db-comparison}
+
+\textbf{Group members}
+\begin{itemize}
+    \item Hamza Abdul Kader, matricola 2230150
+    \item Leonardo Marasca, matricola 2217140
+\end{itemize}
+
+\textbf{Phase 1: Dataset Collection}
+\begin{itemize}
+    \item Use the OpenAlex API to collect a small subset of AI, Machine Learning, and RAG-related papers.
+    \item Include papers, authors, topics, abstracts, citations, and publication years; save the raw data as JSON or CSV.
+\end{itemize}
+
+\textbf{Phase 2: Data Cleaning}
+\begin{itemize}
+    \item Remove duplicate and incomplete records, keep only useful fields, and prepare clean files for both databases.
+\end{itemize}
+
+\textbf{Phase 3: PostgreSQL Model}
+\begin{itemize}
+    \item Design relational tables such as papers, authors, topics, citations, paper\_authors, and paper\_topics.
+    \item Load the cleaned data into PostgreSQL and write SQL queries for the selected analyses.
+\end{itemize}
+
+\textbf{Phase 4: Neo4j Model}
+\begin{itemize}
+    \item Design graph nodes such as Paper, Author, and Topic.
+    \item Design relationships such as AUTHORED, CITES, and HAS\_TOPIC; load the same data and write Cypher queries.
+\end{itemize}
+
+\textbf{Phase 5: Comparison}
+\begin{itemize}
+    \item Run equivalent queries in PostgreSQL and Neo4j.
+    \item Compare query complexity, execution time, readability, modeling difficulty, and expressiveness.
+\end{itemize}
+
+\textbf{Phase 6: Final Presentation}
+\begin{itemize}
+    \item Prepare charts and tables showing the comparison results.
+    \item Build slides explaining the dataset, models, queries, results, conclusions, and a short live demo.
+\end{itemize}
+
+\textbf{Work division}
+
+Hamza will lead OpenAlex data collection, data cleaning, and the PostgreSQL part.
+Leonardo will lead the Neo4j graph model, Cypher queries, comparison tables, and slides.
+Both members should understand the full project before the final presentation.
+
+\end{document}
