@@ -28,6 +28,10 @@ QUERY_LABELS = {
     "Citation links inside the subset": "Citation\nlinks",
     "RAG-related papers": "RAG-related\npapers",
     "Two-hop citation paths": "Two-hop\ncitations",
+    "Authors connected through shared topics": "Authors via\nshared topics",
+    "Papers sharing cited references": "Shared cited\nreferences",
+    "Citation paths up to three hops": "Citation paths\n2-3 hops",
+    "Author citation network": "Author citation\nnetwork",
 }
 
 
@@ -87,7 +91,7 @@ def write_average_time_chart(
     averages: dict[str, dict[str, float]],
 ) -> None:
     width = 1220
-    height = 780
+    height = max(780, 210 + len(query_names) * 74)
     left = 250
     right = 170
     top = 110
@@ -161,7 +165,7 @@ def write_speed_ratio_chart(
     averages: dict[str, dict[str, float]],
 ) -> None:
     width = 1220
-    height = 720
+    height = max(720, 180 + len(query_names) * 66)
     left = 250
     right = 120
     top = 105

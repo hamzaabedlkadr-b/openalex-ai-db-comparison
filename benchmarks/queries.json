@@ -47,5 +47,33 @@
     "description": "Find paper pairs connected by a two-step citation path.",
     "postgres": "SELECT source.title AS source_paper, target.title AS target_paper, COUNT(*) AS paths FROM citations c1 JOIN citations c2 ON c2.citing_paper_id = c1.cited_paper_id JOIN papers source ON source.paper_id = c1.citing_paper_id JOIN papers target ON target.paper_id = c2.cited_paper_id GROUP BY source.paper_id, source.title, target.paper_id, target.title ORDER BY paths DESC, source_paper, target_paper LIMIT 10",
     "neo4j": "MATCH (source:Paper)-[:CITES]->(:Paper)-[:CITES]->(target:Paper) RETURN source.title AS source_paper, target.title AS target_paper, count(*) AS paths ORDER BY paths DESC, source_paper, target_paper LIMIT 10"
+  },
+  {
+    "id": "q8_author_shared_topics",
+    "name": "Authors connected through shared topics",
+    "description": "Find author pairs whose papers share many OpenAlex topics.",
+    "postgres": "WITH active_authors AS (SELECT author_id FROM paper_authors GROUP BY author_id HAVING COUNT(*) >= 2) SELECT a1.display_name AS author_1, a2.display_name AS author_2, COUNT(DISTINCT pt1.topic_id) AS shared_topics FROM active_authors aa1 JOIN paper_authors pa1 ON pa1.author_id = aa1.author_id JOIN paper_topics pt1 ON pt1.paper_id = pa1.paper_id JOIN paper_topics pt2 ON pt2.topic_id = pt1.topic_id JOIN paper_authors pa2 ON pa2.paper_id = pt2.paper_id AND pa1.author_id < pa2.author_id JOIN active_authors aa2 ON aa2.author_id = pa2.author_id JOIN authors a1 ON a1.author_id = pa1.author_id JOIN authors a2 ON a2.author_id = pa2.author_id GROUP BY a1.author_id, a1.display_name, a2.author_id, a2.display_name ORDER BY shared_topics DESC, author_1, author_2 LIMIT 10",
+    "neo4j": "MATCH (a1:Author)-[:AUTHORED]->(:Paper) WITH a1, count(*) AS papers1 WHERE papers1 >= 2 MATCH (a2:Author)-[:AUTHORED]->(:Paper) WITH a1, a2, papers1, count(*) AS papers2 WHERE papers2 >= 2 AND a1.author_id < a2.author_id MATCH (a1)-[:AUTHORED]->(:Paper)-[:HAS_TOPIC]->(t:Topic) MATCH (a2)-[:AUTHORED]->(:Paper)-[:HAS_TOPIC]->(t) WITH a1, a2, count(DISTINCT t) AS shared_topics RETURN a1.display_name AS author_1, a2.display_name AS author_2, shared_topics ORDER BY shared_topics DESC, author_1, author_2 LIMIT 10"
+  },
+  {
+    "id": "q9_papers_shared_references",
+    "name": "Papers sharing cited references",
+    "description": "Find paper pairs that cite the same papers inside the selected subset.",
+    "postgres": "SELECT p1.title AS paper_1, p2.title AS paper_2, COUNT(*) AS shared_references FROM citations c1 JOIN citations c2 ON c1.cited_paper_id = c2.cited_paper_id AND c1.citing_paper_id < c2.citing_paper_id JOIN papers p1 ON p1.paper_id = c1.citing_paper_id JOIN papers p2 ON p2.paper_id = c2.citing_paper_id GROUP BY p1.paper_id, p1.title, p2.paper_id, p2.title ORDER BY shared_references DESC, paper_1, paper_2 LIMIT 10",
+    "neo4j": "MATCH (p1:Paper)-[:CITES]->(ref:Paper)<-[:CITES]-(p2:Paper) WHERE p1.paper_id < p2.paper_id RETURN p1.title AS paper_1, p2.title AS paper_2, count(ref) AS shared_references ORDER BY shared_references DESC, paper_1, paper_2 LIMIT 10"
+  },
+  {
+    "id": "q10_three_hop_citation_paths",
+    "name": "Citation paths up to three hops",
+    "description": "Find paper pairs connected by citation paths of length two or three.",
+    "postgres": "WITH RECURSIVE citation_paths AS (SELECT citing_paper_id AS source_id, cited_paper_id AS target_id, cited_paper_id AS current_id, 1 AS depth, ARRAY[citing_paper_id, cited_paper_id] AS visited FROM citations UNION ALL SELECT cp.source_id, c.cited_paper_id AS target_id, c.cited_paper_id AS current_id, cp.depth + 1 AS depth, cp.visited || c.cited_paper_id FROM citation_paths cp JOIN citations c ON c.citing_paper_id = cp.current_id WHERE cp.depth < 3 AND NOT c.cited_paper_id = ANY(cp.visited)) SELECT source.title AS source_paper, target.title AS target_paper, MIN(depth) AS shortest_path_length, COUNT(*) AS paths FROM citation_paths cp JOIN papers source ON source.paper_id = cp.source_id JOIN papers target ON target.paper_id = cp.target_id WHERE depth BETWEEN 2 AND 3 GROUP BY source.paper_id, source.title, target.paper_id, target.title ORDER BY shortest_path_length, paths DESC, source_paper, target_paper LIMIT 10",
+    "neo4j": "MATCH path = (source:Paper)-[:CITES*2..3]->(target:Paper) WHERE source <> target AND all(n IN nodes(path) WHERE single(m IN nodes(path) WHERE m = n)) RETURN source.title AS source_paper, target.title AS target_paper, min(length(path)) AS shortest_path_length, count(path) AS paths ORDER BY shortest_path_length, paths DESC, source_paper, target_paper LIMIT 10"
+  },
+  {
+    "id": "q11_author_citation_network",
+    "name": "Author citation network",
+    "description": "Find author pairs connected when one author's selected papers cite the other author's selected papers.",
+    "postgres": "SELECT source_author.display_name AS citing_author, target_author.display_name AS cited_author, COUNT(*) AS citation_edges FROM paper_authors source_pa JOIN citations c ON c.citing_paper_id = source_pa.paper_id JOIN paper_authors target_pa ON target_pa.paper_id = c.cited_paper_id JOIN authors source_author ON source_author.author_id = source_pa.author_id JOIN authors target_author ON target_author.author_id = target_pa.author_id WHERE source_pa.author_id <> target_pa.author_id GROUP BY source_author.author_id, source_author.display_name, target_author.author_id, target_author.display_name ORDER BY citation_edges DESC, citing_author, cited_author LIMIT 10",
+    "neo4j": "MATCH (source:Author)-[:AUTHORED]->(:Paper)-[:CITES]->(:Paper)<-[:AUTHORED]-(target:Author) WHERE source.author_id <> target.author_id RETURN source.display_name AS citing_author, target.display_name AS cited_author, count(*) AS citation_edges ORDER BY citation_edges DESC, citing_author, cited_author LIMIT 10"
   }
 ]

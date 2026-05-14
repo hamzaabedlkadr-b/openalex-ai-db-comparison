@@ -294,15 +294,21 @@ Current benchmark summary:
 
 | Query | PostgreSQL avg ms | Neo4j avg ms | Faster system |
 |---|---:|---:|---|
-| Most cited papers | 0.066 | 3.800 | PostgreSQL |
-| Authors with the most papers | 3.131 | 9.000 | PostgreSQL |
-| Most frequent topics | 4.267 | 11.600 | PostgreSQL |
-| Author collaboration pairs | 41.336 | 47.400 | PostgreSQL |
-| Citation links inside the subset | 0.162 | 2.800 | PostgreSQL |
-| RAG-related papers | 4.093 | 7.200 | PostgreSQL |
-| Two-hop citation paths | 1.614 | 7.200 | PostgreSQL |
+| Most cited papers | 0.058 | 4.200 | PostgreSQL |
+| Authors with the most papers | 2.422 | 8.600 | PostgreSQL |
+| Most frequent topics | 4.762 | 15.200 | PostgreSQL |
+| Author collaboration pairs | 44.358 | 65.000 | PostgreSQL |
+| Citation links inside the subset | 0.183 | 4.400 | PostgreSQL |
+| RAG-related papers | 3.515 | 8.600 | PostgreSQL |
+| Two-hop citation paths | 1.577 | 8.400 | PostgreSQL |
+| Authors connected through shared topics | 309.447 | 586.600 | PostgreSQL |
+| Papers sharing cited references | 2.171 | 7.800 | PostgreSQL |
+| Citation paths up to three hops | 5.104 | 12.400 | PostgreSQL |
+| Author citation network | 48.214 | 37.400 | Neo4j |
 
-At the current dataset size, PostgreSQL is faster on all measured queries. This does not mean PostgreSQL is always better than Neo4j. The dataset is still small, and PostgreSQL benefits from efficient relational indexes and low-cost aggregations. Neo4j remains more natural and readable for graph-shaped questions such as author collaboration and citation-path traversal.
+The benchmark now includes 11 query pairs, including more graph-specific analyses. At the current dataset size, PostgreSQL is faster on most measured queries, especially simple ranking and aggregation queries. Neo4j is faster on the author citation network query, where the query follows a natural author-to-paper-to-paper-to-author graph pattern.
+
+This does not mean one system is always better than the other. The dataset is still small, and performance depends on indexes, cache state, query shape, and graph density. For this project, the strongest conclusion is that PostgreSQL is very efficient for relational aggregation, while Neo4j is often more readable and conceptually direct for graph-shaped analysis.
 
 The detailed benchmark results are documented in:
 
@@ -361,6 +367,8 @@ Completed:
 - first timing benchmark executed
 - benchmark results documented
 - benchmark charts generated and documented
+- graph-specific query pairs added
+- benchmark refreshed with 11 query pairs
 
 In progress:
 
@@ -370,11 +378,20 @@ In progress:
 
 Next:
 
-- add more graph-specific queries, such as longer citation paths or author-topic networks
 - optionally increase the dataset size and rerun benchmarks
 - start shaping the final presentation structure
+- write the presentation storyline and slide outline
 
 ## Update Log
+
+### May 14, 2026
+
+- Added four graph-specific query pairs:
+  author shared topics, papers sharing cited references, citation paths up to three hops, and author citation network.
+- Updated PostgreSQL and Neo4j query files.
+- Reran the benchmark with 11 query pairs.
+- Regenerated benchmark charts.
+- Updated benchmark results and report interpretation.
 
 ### May 14, 2026
 

@@ -1,71 +1,111 @@
 query_id,query_name,system,run_number,elapsed_ms,planning_ms,db_hits
-q1_most_cited_papers,Most cited papers,PostgreSQL,1,0.065,0.424,
-q1_most_cited_papers,Most cited papers,Neo4j,1,5.000,,629
-q1_most_cited_papers,Most cited papers,PostgreSQL,2,0.064,0.570,
-q1_most_cited_papers,Most cited papers,Neo4j,2,3.000,,629
-q1_most_cited_papers,Most cited papers,PostgreSQL,3,0.066,0.449,
-q1_most_cited_papers,Most cited papers,Neo4j,3,4.000,,629
-q1_most_cited_papers,Most cited papers,PostgreSQL,4,0.068,0.448,
-q1_most_cited_papers,Most cited papers,Neo4j,4,3.000,,629
-q1_most_cited_papers,Most cited papers,PostgreSQL,5,0.069,0.564,
-q1_most_cited_papers,Most cited papers,Neo4j,5,4.000,,629
-q2_top_authors,Authors with the most papers,PostgreSQL,1,4.017,0.979,
-q2_top_authors,Authors with the most papers,Neo4j,1,8.000,,13822
-q2_top_authors,Authors with the most papers,PostgreSQL,2,3.097,0.851,
-q2_top_authors,Authors with the most papers,Neo4j,2,11.000,,13822
-q2_top_authors,Authors with the most papers,PostgreSQL,3,3.343,1.022,
+q1_most_cited_papers,Most cited papers,PostgreSQL,1,0.076,0.616,
+q1_most_cited_papers,Most cited papers,Neo4j,1,4.000,,629
+q1_most_cited_papers,Most cited papers,PostgreSQL,2,0.047,0.360,
+q1_most_cited_papers,Most cited papers,Neo4j,2,9.000,,629
+q1_most_cited_papers,Most cited papers,PostgreSQL,3,0.048,0.398,
+q1_most_cited_papers,Most cited papers,Neo4j,3,3.000,,629
+q1_most_cited_papers,Most cited papers,PostgreSQL,4,0.056,0.429,
+q1_most_cited_papers,Most cited papers,Neo4j,4,2.000,,629
+q1_most_cited_papers,Most cited papers,PostgreSQL,5,0.063,0.536,
+q1_most_cited_papers,Most cited papers,Neo4j,5,3.000,,629
+q2_top_authors,Authors with the most papers,PostgreSQL,1,2.255,0.740,
+q2_top_authors,Authors with the most papers,Neo4j,1,7.000,,13822
+q2_top_authors,Authors with the most papers,PostgreSQL,2,2.420,0.957,
+q2_top_authors,Authors with the most papers,Neo4j,2,15.000,,13822
+q2_top_authors,Authors with the most papers,PostgreSQL,3,3.096,0.641,
 q2_top_authors,Authors with the most papers,Neo4j,3,7.000,,13822
-q2_top_authors,Authors with the most papers,PostgreSQL,4,2.204,0.803,
-q2_top_authors,Authors with the most papers,Neo4j,4,9.000,,13822
-q2_top_authors,Authors with the most papers,PostgreSQL,5,2.994,0.959,
-q2_top_authors,Authors with the most papers,Neo4j,5,10.000,,13822
-q3_top_topics,Most frequent topics,PostgreSQL,1,3.430,0.996,
-q3_top_topics,Most frequent topics,Neo4j,1,13.000,,20221
-q3_top_topics,Most frequent topics,PostgreSQL,2,4.326,0.654,
-q3_top_topics,Most frequent topics,Neo4j,2,10.000,,20221
-q3_top_topics,Most frequent topics,PostgreSQL,3,6.220,1.593,
-q3_top_topics,Most frequent topics,Neo4j,3,11.000,,20221
-q3_top_topics,Most frequent topics,PostgreSQL,4,4.107,1.105,
-q3_top_topics,Most frequent topics,Neo4j,4,14.000,,20221
-q3_top_topics,Most frequent topics,PostgreSQL,5,3.254,0.655,
-q3_top_topics,Most frequent topics,Neo4j,5,10.000,,20221
-q4_author_collaborations,Author collaboration pairs,PostgreSQL,1,43.709,1.236,
-q4_author_collaborations,Author collaboration pairs,Neo4j,1,45.000,,64054
-q4_author_collaborations,Author collaboration pairs,PostgreSQL,2,46.091,1.499,
-q4_author_collaborations,Author collaboration pairs,Neo4j,2,59.000,,64054
-q4_author_collaborations,Author collaboration pairs,PostgreSQL,3,38.708,1.425,
-q4_author_collaborations,Author collaboration pairs,Neo4j,3,50.000,,64054
-q4_author_collaborations,Author collaboration pairs,PostgreSQL,4,40.005,1.300,
-q4_author_collaborations,Author collaboration pairs,Neo4j,4,42.000,,64054
-q4_author_collaborations,Author collaboration pairs,PostgreSQL,5,38.165,1.924,
-q4_author_collaborations,Author collaboration pairs,Neo4j,5,41.000,,64054
-q5_internal_citations,Citation links inside the subset,PostgreSQL,1,0.141,0.931,
+q2_top_authors,Authors with the most papers,PostgreSQL,4,2.257,0.793,
+q2_top_authors,Authors with the most papers,Neo4j,4,8.000,,13822
+q2_top_authors,Authors with the most papers,PostgreSQL,5,2.080,0.657,
+q2_top_authors,Authors with the most papers,Neo4j,5,6.000,,13822
+q3_top_topics,Most frequent topics,PostgreSQL,1,3.643,1.580,
+q3_top_topics,Most frequent topics,Neo4j,1,10.000,,20221
+q3_top_topics,Most frequent topics,PostgreSQL,2,4.269,1.107,
+q3_top_topics,Most frequent topics,Neo4j,2,29.000,,20221
+q3_top_topics,Most frequent topics,PostgreSQL,3,4.230,1.039,
+q3_top_topics,Most frequent topics,Neo4j,3,14.000,,20221
+q3_top_topics,Most frequent topics,PostgreSQL,4,5.494,1.681,
+q3_top_topics,Most frequent topics,Neo4j,4,12.000,,20221
+q3_top_topics,Most frequent topics,PostgreSQL,5,6.174,1.178,
+q3_top_topics,Most frequent topics,Neo4j,5,11.000,,20221
+q4_author_collaborations,Author collaboration pairs,PostgreSQL,1,40.606,1.638,
+q4_author_collaborations,Author collaboration pairs,Neo4j,1,48.000,,64054
+q4_author_collaborations,Author collaboration pairs,PostgreSQL,2,43.001,1.854,
+q4_author_collaborations,Author collaboration pairs,Neo4j,2,83.000,,64054
+q4_author_collaborations,Author collaboration pairs,PostgreSQL,3,57.535,1.686,
+q4_author_collaborations,Author collaboration pairs,Neo4j,3,69.000,,64054
+q4_author_collaborations,Author collaboration pairs,PostgreSQL,4,42.086,1.441,
+q4_author_collaborations,Author collaboration pairs,Neo4j,4,61.000,,64054
+q4_author_collaborations,Author collaboration pairs,PostgreSQL,5,38.561,1.455,
+q4_author_collaborations,Author collaboration pairs,Neo4j,5,64.000,,64054
+q5_internal_citations,Citation links inside the subset,PostgreSQL,1,0.136,0.924,
 q5_internal_citations,Citation links inside the subset,Neo4j,1,3.000,,134
-q5_internal_citations,Citation links inside the subset,PostgreSQL,2,0.150,1.365,
-q5_internal_citations,Citation links inside the subset,Neo4j,2,3.000,,134
-q5_internal_citations,Citation links inside the subset,PostgreSQL,3,0.200,1.557,
-q5_internal_citations,Citation links inside the subset,Neo4j,3,2.000,,134
-q5_internal_citations,Citation links inside the subset,PostgreSQL,4,0.167,1.024,
+q5_internal_citations,Citation links inside the subset,PostgreSQL,2,0.166,1.061,
+q5_internal_citations,Citation links inside the subset,Neo4j,2,10.000,,134
+q5_internal_citations,Citation links inside the subset,PostgreSQL,3,0.213,1.490,
+q5_internal_citations,Citation links inside the subset,Neo4j,3,3.000,,134
+q5_internal_citations,Citation links inside the subset,PostgreSQL,4,0.197,1.334,
 q5_internal_citations,Citation links inside the subset,Neo4j,4,3.000,,134
-q5_internal_citations,Citation links inside the subset,PostgreSQL,5,0.154,1.094,
+q5_internal_citations,Citation links inside the subset,PostgreSQL,5,0.202,0.964,
 q5_internal_citations,Citation links inside the subset,Neo4j,5,3.000,,134
-q6_rag_related_papers,RAG-related papers,PostgreSQL,1,4.291,0.519,
-q6_rag_related_papers,RAG-related papers,Neo4j,1,7.000,,918
-q6_rag_related_papers,RAG-related papers,PostgreSQL,2,5.643,0.649,
-q6_rag_related_papers,RAG-related papers,Neo4j,2,5.000,,918
-q6_rag_related_papers,RAG-related papers,PostgreSQL,3,3.639,0.588,
-q6_rag_related_papers,RAG-related papers,Neo4j,3,11.000,,918
-q6_rag_related_papers,RAG-related papers,PostgreSQL,4,3.598,0.488,
-q6_rag_related_papers,RAG-related papers,Neo4j,4,7.000,,918
-q6_rag_related_papers,RAG-related papers,PostgreSQL,5,3.295,0.563,
+q6_rag_related_papers,RAG-related papers,PostgreSQL,1,3.225,0.407,
+q6_rag_related_papers,RAG-related papers,Neo4j,1,5.000,,918
+q6_rag_related_papers,RAG-related papers,PostgreSQL,2,3.684,0.663,
+q6_rag_related_papers,RAG-related papers,Neo4j,2,18.000,,918
+q6_rag_related_papers,RAG-related papers,PostgreSQL,3,2.828,0.554,
+q6_rag_related_papers,RAG-related papers,Neo4j,3,8.000,,918
+q6_rag_related_papers,RAG-related papers,PostgreSQL,4,4.510,0.653,
+q6_rag_related_papers,RAG-related papers,Neo4j,4,6.000,,918
+q6_rag_related_papers,RAG-related papers,PostgreSQL,5,3.327,0.657,
 q6_rag_related_papers,RAG-related papers,Neo4j,5,6.000,,918
-q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,1,1.513,2.032,
+q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,1,1.239,1.778,
 q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,1,7.000,,19008
-q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,2,1.907,1.834,
-q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,2,7.000,,19008
-q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,3,1.799,1.509,
+q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,2,1.218,1.323,
+q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,2,16.000,,19008
+q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,3,2.021,2.338,
 q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,3,7.000,,19008
-q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,4,1.615,2.043,
-q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,4,7.000,,19008
-q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,5,1.236,1.761,
-q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,5,8.000,,19008
+q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,4,1.699,1.956,
+q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,4,5.000,,19008
+q7_two_hop_citation_paths,Two-hop citation paths,PostgreSQL,5,1.709,1.782,
+q7_two_hop_citation_paths,Two-hop citation paths,Neo4j,5,7.000,,19008
+q8_author_shared_topics,Authors connected through shared topics,PostgreSQL,1,303.304,23.491,
+q8_author_shared_topics,Authors connected through shared topics,Neo4j,1,565.000,,1845747
+q8_author_shared_topics,Authors connected through shared topics,PostgreSQL,2,355.952,28.340,
+q8_author_shared_topics,Authors connected through shared topics,Neo4j,2,590.000,,1845747
+q8_author_shared_topics,Authors connected through shared topics,PostgreSQL,3,301.915,29.572,
+q8_author_shared_topics,Authors connected through shared topics,Neo4j,3,578.000,,1845747
+q8_author_shared_topics,Authors connected through shared topics,PostgreSQL,4,300.473,20.823,
+q8_author_shared_topics,Authors connected through shared topics,Neo4j,4,670.000,,1845747
+q8_author_shared_topics,Authors connected through shared topics,PostgreSQL,5,285.593,25.744,
+q8_author_shared_topics,Authors connected through shared topics,Neo4j,5,530.000,,1845747
+q9_papers_shared_references,Papers sharing cited references,PostgreSQL,1,2.834,1.598,
+q9_papers_shared_references,Papers sharing cited references,Neo4j,1,8.000,,21815
+q9_papers_shared_references,Papers sharing cited references,PostgreSQL,2,2.201,2.164,
+q9_papers_shared_references,Papers sharing cited references,Neo4j,2,7.000,,21815
+q9_papers_shared_references,Papers sharing cited references,PostgreSQL,3,1.699,1.835,
+q9_papers_shared_references,Papers sharing cited references,Neo4j,3,8.000,,21815
+q9_papers_shared_references,Papers sharing cited references,PostgreSQL,4,2.034,1.576,
+q9_papers_shared_references,Papers sharing cited references,Neo4j,4,8.000,,21815
+q9_papers_shared_references,Papers sharing cited references,PostgreSQL,5,2.086,1.713,
+q9_papers_shared_references,Papers sharing cited references,Neo4j,5,8.000,,21815
+q10_three_hop_citation_paths,Citation paths up to three hops,PostgreSQL,1,5.757,0.917,
+q10_three_hop_citation_paths,Citation paths up to three hops,Neo4j,1,13.000,,4830
+q10_three_hop_citation_paths,Citation paths up to three hops,PostgreSQL,2,5.796,1.084,
+q10_three_hop_citation_paths,Citation paths up to three hops,Neo4j,2,11.000,,4830
+q10_three_hop_citation_paths,Citation paths up to three hops,PostgreSQL,3,4.124,0.876,
+q10_three_hop_citation_paths,Citation paths up to three hops,Neo4j,3,16.000,,4830
+q10_three_hop_citation_paths,Citation paths up to three hops,PostgreSQL,4,5.806,1.120,
+q10_three_hop_citation_paths,Citation paths up to three hops,Neo4j,4,14.000,,4830
+q10_three_hop_citation_paths,Citation paths up to three hops,PostgreSQL,5,4.037,1.274,
+q10_three_hop_citation_paths,Citation paths up to three hops,Neo4j,5,8.000,,4830
+q11_author_citation_network,Author citation network,PostgreSQL,1,50.764,2.997,
+q11_author_citation_network,Author citation network,Neo4j,1,35.000,,40740
+q11_author_citation_network,Author citation network,PostgreSQL,2,44.803,3.336,
+q11_author_citation_network,Author citation network,Neo4j,2,40.000,,40740
+q11_author_citation_network,Author citation network,PostgreSQL,3,52.426,3.939,
+q11_author_citation_network,Author citation network,Neo4j,3,40.000,,40740
+q11_author_citation_network,Author citation network,PostgreSQL,4,45.389,2.730,
+q11_author_citation_network,Author citation network,Neo4j,4,36.000,,40740
+q11_author_citation_network,Author citation network,PostgreSQL,5,47.688,3.722,
+q11_author_citation_network,Author citation network,Neo4j,5,36.000,,40740

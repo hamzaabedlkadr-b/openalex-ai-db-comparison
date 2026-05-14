@@ -1,6 +1,6 @@
 # Benchmark Results
 
-Generated at: 2026-05-14 21:01:58
+Generated at: 2026-05-14 21:22:23
 
 ## Methodology
 
@@ -18,32 +18,44 @@ Generated at: 2026-05-14 21:01:58
 
 | Query | PostgreSQL avg ms | Neo4j avg ms | Faster system | Notes |
 |---|---:|---:|---|---|
-| Most cited papers | 0.066 | 3.800 | PostgreSQL | Find the most cited papers in the selected OpenAlex subset. |
-| Authors with the most papers | 3.131 | 9.000 | PostgreSQL | Count how many selected papers are connected to each author. |
-| Most frequent topics | 4.267 | 11.600 | PostgreSQL | Count the most frequent topics in the selected paper subset. |
-| Author collaboration pairs | 41.336 | 47.400 | PostgreSQL | Find author pairs that appear together on the largest number of selected papers. |
-| Citation links inside the subset | 0.162 | 2.800 | PostgreSQL | Return citation relationships where both papers are present in the selected subset. |
-| RAG-related papers | 4.093 | 7.200 | PostgreSQL | Search selected papers for Retrieval-Augmented Generation references in titles or abstracts. |
-| Two-hop citation paths | 1.614 | 7.200 | PostgreSQL | Find paper pairs connected by a two-step citation path. |
+| Most cited papers | 0.058 | 4.200 | PostgreSQL | Find the most cited papers in the selected OpenAlex subset. |
+| Authors with the most papers | 2.422 | 8.600 | PostgreSQL | Count how many selected papers are connected to each author. |
+| Most frequent topics | 4.762 | 15.200 | PostgreSQL | Count the most frequent topics in the selected paper subset. |
+| Author collaboration pairs | 44.358 | 65.000 | PostgreSQL | Find author pairs that appear together on the largest number of selected papers. |
+| Citation links inside the subset | 0.183 | 4.400 | PostgreSQL | Return citation relationships where both papers are present in the selected subset. |
+| RAG-related papers | 3.515 | 8.600 | PostgreSQL | Search selected papers for Retrieval-Augmented Generation references in titles or abstracts. |
+| Two-hop citation paths | 1.577 | 8.400 | PostgreSQL | Find paper pairs connected by a two-step citation path. |
+| Authors connected through shared topics | 309.447 | 586.600 | PostgreSQL | Find author pairs whose papers share many OpenAlex topics. |
+| Papers sharing cited references | 2.171 | 7.800 | PostgreSQL | Find paper pairs that cite the same papers inside the selected subset. |
+| Citation paths up to three hops | 5.104 | 12.400 | PostgreSQL | Find paper pairs connected by citation paths of length two or three. |
+| Author citation network | 48.214 | 37.400 | Neo4j | Find author pairs connected when one author's selected papers cite the other author's selected papers. |
 
 ## Detailed Statistics
 
 | Query | System | Avg ms | Median ms | Min ms | Max ms |
 |---|---|---:|---:|---:|---:|
-| Most cited papers | PostgreSQL | 0.066 | 0.066 | 0.064 | 0.069 |
-| Most cited papers | Neo4j | 3.800 | 4.000 | 3.000 | 5.000 |
-| Authors with the most papers | PostgreSQL | 3.131 | 3.097 | 2.204 | 4.017 |
-| Authors with the most papers | Neo4j | 9.000 | 9.000 | 7.000 | 11.000 |
-| Most frequent topics | PostgreSQL | 4.267 | 4.107 | 3.254 | 6.220 |
-| Most frequent topics | Neo4j | 11.600 | 11.000 | 10.000 | 14.000 |
-| Author collaboration pairs | PostgreSQL | 41.336 | 40.005 | 38.165 | 46.091 |
-| Author collaboration pairs | Neo4j | 47.400 | 45.000 | 41.000 | 59.000 |
-| Citation links inside the subset | PostgreSQL | 0.162 | 0.154 | 0.141 | 0.200 |
-| Citation links inside the subset | Neo4j | 2.800 | 3.000 | 2.000 | 3.000 |
-| RAG-related papers | PostgreSQL | 4.093 | 3.639 | 3.295 | 5.643 |
-| RAG-related papers | Neo4j | 7.200 | 7.000 | 5.000 | 11.000 |
-| Two-hop citation paths | PostgreSQL | 1.614 | 1.615 | 1.236 | 1.907 |
-| Two-hop citation paths | Neo4j | 7.200 | 7.000 | 7.000 | 8.000 |
+| Most cited papers | PostgreSQL | 0.058 | 0.056 | 0.047 | 0.076 |
+| Most cited papers | Neo4j | 4.200 | 3.000 | 2.000 | 9.000 |
+| Authors with the most papers | PostgreSQL | 2.422 | 2.257 | 2.080 | 3.096 |
+| Authors with the most papers | Neo4j | 8.600 | 7.000 | 6.000 | 15.000 |
+| Most frequent topics | PostgreSQL | 4.762 | 4.269 | 3.643 | 6.174 |
+| Most frequent topics | Neo4j | 15.200 | 12.000 | 10.000 | 29.000 |
+| Author collaboration pairs | PostgreSQL | 44.358 | 42.086 | 38.561 | 57.535 |
+| Author collaboration pairs | Neo4j | 65.000 | 64.000 | 48.000 | 83.000 |
+| Citation links inside the subset | PostgreSQL | 0.183 | 0.197 | 0.136 | 0.213 |
+| Citation links inside the subset | Neo4j | 4.400 | 3.000 | 3.000 | 10.000 |
+| RAG-related papers | PostgreSQL | 3.515 | 3.327 | 2.828 | 4.510 |
+| RAG-related papers | Neo4j | 8.600 | 6.000 | 5.000 | 18.000 |
+| Two-hop citation paths | PostgreSQL | 1.577 | 1.699 | 1.218 | 2.021 |
+| Two-hop citation paths | Neo4j | 8.400 | 7.000 | 5.000 | 16.000 |
+| Authors connected through shared topics | PostgreSQL | 309.447 | 301.915 | 285.593 | 355.952 |
+| Authors connected through shared topics | Neo4j | 586.600 | 578.000 | 530.000 | 670.000 |
+| Papers sharing cited references | PostgreSQL | 2.171 | 2.086 | 1.699 | 2.834 |
+| Papers sharing cited references | Neo4j | 7.800 | 8.000 | 7.000 | 8.000 |
+| Citation paths up to three hops | PostgreSQL | 5.104 | 5.757 | 4.037 | 5.806 |
+| Citation paths up to three hops | Neo4j | 12.400 | 13.000 | 8.000 | 16.000 |
+| Author citation network | PostgreSQL | 48.214 | 47.688 | 44.803 | 52.426 |
+| Author citation network | Neo4j | 37.400 | 36.000 | 35.000 | 40.000 |
 
 ## Interpretation Notes
 

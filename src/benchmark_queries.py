@@ -202,6 +202,10 @@ def build_markdown(
         "",
         "## Summary",
         "",
+        "![Average query execution time](figures/benchmark_average_times.svg)",
+        "",
+        "![Relative query time](figures/benchmark_relative_time.svg)",
+        "",
         "| Query | PostgreSQL avg ms | Neo4j avg ms | Faster system | Notes |",
         "|---|---:|---:|---|---|",
     ]
