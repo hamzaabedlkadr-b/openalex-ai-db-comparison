@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="720" viewBox="0 0 1220 720">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="250.0" y="42.0" font-family="Arial, sans-serif" font-size="24" font-weight="700" text-anchor="start" fill="#111827" >Relative Query Time</text>
+<text x="250.0" y="68.0" font-family="Arial, sans-serif" font-size="15" font-weight="400" text-anchor="start" fill="#4b5563" >Neo4j average time divided by PostgreSQL average time</text>
+<line x1="250.0" y1="87" x2="250.0" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="250.0" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >0x</text>
+<line x1="382.6" y1="87" x2="382.6" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="382.6" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >10x</text>
+<line x1="515.2" y1="87" x2="515.2" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="515.2" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >20x</text>
+<line x1="647.8" y1="87" x2="647.8" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="647.8" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >30x</text>
+<line x1="780.5" y1="87" x2="780.5" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="780.5" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >40x</text>
+<line x1="913.1" y1="87" x2="913.1" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="913.1" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >50x</text>
+<line x1="1045.7" y1="87" x2="1045.7" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1045.7" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >60x</text>
+<line x1="1178.3" y1="87" x2="1178.3" y2="577" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1178.3" y="601.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#4b5563" >70x</text>
+<line x1="263.3" y1="85" x2="263.3" y2="577" stroke="#111827" stroke-width="1.5" stroke-dasharray="5 5"/>
+<text x="271.3" y="79.0" font-family="Arial, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#374151" >equal time</text>
+<text x="228.0" y="121.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >Most cited</text>
+<text x="228.0" y="136.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >papers</text>
+<rect x="250.0" y="113.0" width="758.9" height="24" rx="5" fill="#7c3aed"/>
+<text x="1016.9" y="131.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >57.2x</text>
+<text x="228.0" y="187.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >Top</text>
+<text x="228.0" y="202.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >authors</text>
+<rect x="250.0" y="179.0" width="38.1" height="24" rx="5" fill="#7c3aed"/>
+<text x="296.1" y="197.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >2.9x</text>
+<text x="228.0" y="253.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >Top</text>
+<text x="228.0" y="268.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >topics</text>
+<rect x="250.0" y="245.0" width="36.0" height="24" rx="5" fill="#7c3aed"/>
+<text x="294.0" y="263.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >2.7x</text>
+<text x="228.0" y="319.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >Author</text>
+<text x="228.0" y="334.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >collaboration</text>
+<rect x="250.0" y="311.0" width="15.2" height="24" rx="5" fill="#7c3aed"/>
+<text x="273.2" y="329.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >1.1x</text>
+<text x="228.0" y="385.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >Citation</text>
+<text x="228.0" y="400.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >links</text>
+<rect x="250.0" y="377.0" width="228.6" height="24" rx="5" fill="#7c3aed"/>
+<text x="486.6" y="395.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >17.2x</text>
+<text x="228.0" y="451.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >RAG-related</text>
+<text x="228.0" y="466.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >papers</text>
+<rect x="250.0" y="443.0" width="23.3" height="24" rx="5" fill="#7c3aed"/>
+<text x="281.3" y="461.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >1.8x</text>
+<text x="228.0" y="517.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >Two-hop</text>
+<text x="228.0" y="532.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="#111827" >citations</text>
+<rect x="250.0" y="509.0" width="59.2" height="24" rx="5" fill="#7c3aed"/>
+<text x="317.2" y="527.0" font-family="Arial, sans-serif" font-size="13" font-weight="700" text-anchor="start" fill="#111827" >4.5x</text>
+<line x1="250" y1="577" x2="1100" y2="577" stroke="#9ca3af" stroke-width="1"/>
+<text x="250.0" y="692.0" font-family="Arial, sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="#4b5563" >Values above 1x mean Neo4j was slower than PostgreSQL in this local benchmark.</text>
+</svg>

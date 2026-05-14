@@ -89,6 +89,14 @@ This creates:
 - `benchmarks/results/benchmark_results.csv`
 - `docs/benchmark_results.md`
 
+Generate benchmark charts:
+
+```bash
+python src/generate_benchmark_charts.py
+```
+
+This creates SVG charts in `docs/figures/`.
+
 ## Roadmap
 
 1. Collect a small OpenAlex subset using the OpenAlex API.
@@ -105,6 +113,8 @@ This creates:
 - [Data model](docs/data_model.md)
 - [First query results](docs/query_results.md)
 - [Benchmark results](docs/benchmark_results.md)
+- [Benchmark average-time chart](docs/figures/benchmark_average_times.svg)
+- [Benchmark relative-time chart](docs/figures/benchmark_relative_time.svg)
 - [Living project report](docs/project_report.md)
 
 ## Repository Structure

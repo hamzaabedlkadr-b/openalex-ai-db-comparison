@@ -310,6 +310,12 @@ The detailed benchmark results are documented in:
 docs/benchmark_results.md
 ```
 
+Benchmark charts:
+
+![Average query execution time](figures/benchmark_average_times.svg)
+
+![Relative query time](figures/benchmark_relative_time.svg)
+
 ## Technical Issue Fixed
 
 During PostgreSQL loading, we found that OpenAlex can contain duplicate author entries for the same paper.
@@ -354,20 +360,29 @@ Completed:
 - benchmark script added
 - first timing benchmark executed
 - benchmark results documented
+- benchmark charts generated and documented
 
 In progress:
 
 - building a stronger comparison between SQL and Cypher
 - adding interpretation and presentation-ready tables
+- preparing visual material for the final slides
 
 Next:
 
-- add charts for benchmark results
 - add more graph-specific queries, such as longer citation paths or author-topic networks
 - optionally increase the dataset size and rerun benchmarks
 - start shaping the final presentation structure
 
 ## Update Log
+
+### May 14, 2026
+
+- Added presentation-ready benchmark charts.
+- Created `src/generate_benchmark_charts.py`.
+- Generated `docs/figures/benchmark_average_times.svg`.
+- Generated `docs/figures/benchmark_relative_time.svg`.
+- Linked charts from the benchmark results and living report.
 
 ### May 14, 2026
 
