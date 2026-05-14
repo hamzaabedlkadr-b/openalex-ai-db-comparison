@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: openalex-postgres
+    environment:
+      POSTGRES_DB: openalex_ai
+      POSTGRES_USER: openalex
+      POSTGRES_PASSWORD: openalex
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  neo4j:
+    image: neo4j:5
+    container_name: openalex-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/openalex123
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/data
+      - ./data/processed:/import
+
+volumes:
+  postgres-data:
+  neo4j-data:

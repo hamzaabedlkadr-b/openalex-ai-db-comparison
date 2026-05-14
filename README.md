@@ -30,6 +30,47 @@ The goal is to compare both systems in terms of data modeling, query complexity,
 - Neo4j for the graph database
 - SQL and Cypher for query comparison
 
+## Quick Start
+
+Collect a small OpenAlex sample:
+
+```bash
+python src/collect_openalex.py --per-term 25 --mailto your.email@example.com
+```
+
+This creates:
+
+- `data/raw/openalex_works.jsonl`
+- `data/processed/papers.csv`
+- `data/processed/authors.csv`
+- `data/processed/paper_authors.csv`
+- `data/processed/topics.csv`
+- `data/processed/paper_topics.csv`
+- `data/processed/citations.csv`
+
+Start the databases with Docker:
+
+```bash
+docker compose up -d
+```
+
+Load PostgreSQL:
+
+```bash
+psql -h localhost -U openalex -d openalex_ai -f database/postgres/schema.sql
+psql -h localhost -U openalex -d openalex_ai -f database/postgres/load.sql
+```
+
+Neo4j is available at:
+
+```text
+http://localhost:7474
+username: neo4j
+password: openalex123
+```
+
+Run `database/neo4j/constraints.cypher`, then `database/neo4j/import.cypher` in the Neo4j browser.
+
 ## Roadmap
 
 1. Collect a small OpenAlex subset using the OpenAlex API.
@@ -43,3 +84,15 @@ The goal is to compare both systems in terms of data modeling, query complexity,
 
 - [Project proposal](docs/project_proposal.pdf)
 - [Project roadmap](docs/project_roadmap.pdf)
+- [Data model](docs/data_model.md)
+
+## Repository Structure
+
+```text
+src/                    Python data collection and normalization scripts
+data/raw/               Raw OpenAlex API output, ignored by git
+data/processed/         Generated CSV files, ignored by git
+database/postgres/      PostgreSQL schema, loading script, and SQL queries
+database/neo4j/         Neo4j constraints, import script, and Cypher queries
+docs/                   Proposal, roadmap, and project documentation
+```

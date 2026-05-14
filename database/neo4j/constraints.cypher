@@ -1,0 +1,8 @@
+CREATE CONSTRAINT paper_id IF NOT EXISTS
+FOR (p:Paper) REQUIRE p.paper_id IS UNIQUE;
+
+CREATE CONSTRAINT author_id IF NOT EXISTS
+FOR (a:Author) REQUIRE a.author_id IS UNIQUE;
+
+CREATE CONSTRAINT topic_id IF NOT EXISTS
+FOR (t:Topic) REQUIRE t.topic_id IS UNIQUE;

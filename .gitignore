@@ -16,6 +16,12 @@ __pycache__/
 .venv/
 venv/
 
+# Generated project data
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
 # OS/editor files
 .DS_Store
 Thumbs.db
