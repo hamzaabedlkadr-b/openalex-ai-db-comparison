@@ -93,6 +93,7 @@ docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 -f /cypher/impor
 - [Project roadmap](docs/project_roadmap.pdf)
 - [Data model](docs/data_model.md)
 - [First query results](docs/query_results.md)
+- [Living project report](docs/project_report.md)
 
 ## Repository Structure
 
