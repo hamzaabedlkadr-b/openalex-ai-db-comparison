@@ -116,6 +116,7 @@ This creates SVG charts in `docs/figures/`.
 - [Benchmark average-time chart](docs/figures/benchmark_average_times.svg)
 - [Benchmark relative-time chart](docs/figures/benchmark_relative_time.svg)
 - [Living project report](docs/project_report.md)
+- [Project report PDF](docs/project_report.pdf)
 
 ## Repository Structure
 
