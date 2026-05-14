@@ -263,6 +263,53 @@ In PostgreSQL, the same idea requires a self-join on the `paper_authors` bridge 
 
 This supports the expected comparison: PostgreSQL is very strong for tabular aggregation, while Neo4j is more expressive for graph traversal and relationship analysis.
 
+## Benchmarking
+
+We added a repeatable benchmark script:
+
+```bash
+python src/benchmark_queries.py --runs 5 --warmups 1
+```
+
+The benchmark runs paired SQL and Cypher queries from:
+
+```text
+benchmarks/queries.json
+```
+
+It writes:
+
+```text
+benchmarks/results/benchmark_results.csv
+docs/benchmark_results.md
+```
+
+Benchmark methodology:
+
+- PostgreSQL timing uses `EXPLAIN (ANALYZE, FORMAT JSON)` and records server execution time.
+- Neo4j timing uses `PROFILE` through `cypher-shell --format verbose`.
+- Each query/system pair has one warmup run and five measured runs.
+
+Current benchmark summary:
+
+| Query | PostgreSQL avg ms | Neo4j avg ms | Faster system |
+|---|---:|---:|---|
+| Most cited papers | 0.066 | 3.800 | PostgreSQL |
+| Authors with the most papers | 3.131 | 9.000 | PostgreSQL |
+| Most frequent topics | 4.267 | 11.600 | PostgreSQL |
+| Author collaboration pairs | 41.336 | 47.400 | PostgreSQL |
+| Citation links inside the subset | 0.162 | 2.800 | PostgreSQL |
+| RAG-related papers | 4.093 | 7.200 | PostgreSQL |
+| Two-hop citation paths | 1.614 | 7.200 | PostgreSQL |
+
+At the current dataset size, PostgreSQL is faster on all measured queries. This does not mean PostgreSQL is always better than Neo4j. The dataset is still small, and PostgreSQL benefits from efficient relational indexes and low-cost aggregations. Neo4j remains more natural and readable for graph-shaped questions such as author collaboration and citation-path traversal.
+
+The detailed benchmark results are documented in:
+
+```text
+docs/benchmark_results.md
+```
+
 ## Technical Issue Fixed
 
 During PostgreSQL loading, we found that OpenAlex can contain duplicate author entries for the same paper.
@@ -304,21 +351,33 @@ Completed:
 - Neo4j loaded
 - first equivalent SQL/Cypher queries executed
 - first query results documented
+- benchmark script added
+- first timing benchmark executed
+- benchmark results documented
 
 In progress:
 
 - building a stronger comparison between SQL and Cypher
-- preparing benchmark scripts for execution-time comparison
+- adding interpretation and presentation-ready tables
 
 Next:
 
-- add benchmark scripts
-- run each query multiple times
-- export timing results to CSV
-- add charts/tables for the final presentation
-- add more graph-specific queries, such as citation paths or author-topic networks
+- add charts for benchmark results
+- add more graph-specific queries, such as longer citation paths or author-topic networks
+- optionally increase the dataset size and rerun benchmarks
+- start shaping the final presentation structure
 
 ## Update Log
+
+### May 14, 2026
+
+- Added repeatable benchmark infrastructure.
+- Created `benchmarks/queries.json`.
+- Created `src/benchmark_queries.py`.
+- Ran one warmup and five measured runs for seven query pairs.
+- Saved raw timing results in `benchmarks/results/benchmark_results.csv`.
+- Saved benchmark summary in `docs/benchmark_results.md`.
+- Updated the report with benchmark methodology and current results.
 
 ### May 14, 2026
 

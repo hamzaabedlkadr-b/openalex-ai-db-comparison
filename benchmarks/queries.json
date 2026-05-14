@@ -1,0 +1,51 @@
+[
+  {
+    "id": "q1_most_cited_papers",
+    "name": "Most cited papers",
+    "description": "Find the most cited papers in the selected OpenAlex subset.",
+    "postgres": "SELECT paper_id, title, publication_year, cited_by_count FROM papers ORDER BY cited_by_count DESC LIMIT 10",
+    "neo4j": "MATCH (p:Paper) RETURN p.paper_id AS paper_id, p.title AS title, p.publication_year AS publication_year, p.cited_by_count AS cited_by_count ORDER BY cited_by_count DESC LIMIT 10"
+  },
+  {
+    "id": "q2_top_authors",
+    "name": "Authors with the most papers",
+    "description": "Count how many selected papers are connected to each author.",
+    "postgres": "SELECT a.author_id, a.display_name AS author, COUNT(*) AS paper_count FROM authors a JOIN paper_authors pa ON pa.author_id = a.author_id GROUP BY a.author_id, a.display_name ORDER BY paper_count DESC, author LIMIT 10",
+    "neo4j": "MATCH (a:Author)-[:AUTHORED]->(p:Paper) RETURN a.author_id AS author_id, a.display_name AS author, count(p) AS paper_count ORDER BY paper_count DESC, author LIMIT 10"
+  },
+  {
+    "id": "q3_top_topics",
+    "name": "Most frequent topics",
+    "description": "Count the most frequent topics in the selected paper subset.",
+    "postgres": "SELECT t.topic_id, t.display_name AS topic, COUNT(*) AS paper_count FROM topics t JOIN paper_topics pt ON pt.topic_id = t.topic_id GROUP BY t.topic_id, t.display_name ORDER BY paper_count DESC, topic LIMIT 10",
+    "neo4j": "MATCH (p:Paper)-[:HAS_TOPIC]->(t:Topic) RETURN t.topic_id AS topic_id, t.display_name AS topic, count(p) AS paper_count ORDER BY paper_count DESC, topic LIMIT 10"
+  },
+  {
+    "id": "q4_author_collaborations",
+    "name": "Author collaboration pairs",
+    "description": "Find author pairs that appear together on the largest number of selected papers.",
+    "postgres": "SELECT a1.display_name AS author_1, a2.display_name AS author_2, COUNT(*) AS shared_papers FROM paper_authors pa1 JOIN paper_authors pa2 ON pa1.paper_id = pa2.paper_id AND pa1.author_id < pa2.author_id JOIN authors a1 ON a1.author_id = pa1.author_id JOIN authors a2 ON a2.author_id = pa2.author_id GROUP BY a1.author_id, a1.display_name, a2.author_id, a2.display_name ORDER BY shared_papers DESC, author_1, author_2 LIMIT 10",
+    "neo4j": "MATCH (a1:Author)-[:AUTHORED]->(p:Paper)<-[:AUTHORED]-(a2:Author) WHERE a1.author_id < a2.author_id WITH a1, a2, count(p) AS shared_papers RETURN a1.display_name AS author_1, a2.display_name AS author_2, shared_papers ORDER BY shared_papers DESC, author_1, author_2 LIMIT 10"
+  },
+  {
+    "id": "q5_internal_citations",
+    "name": "Citation links inside the subset",
+    "description": "Return citation relationships where both papers are present in the selected subset.",
+    "postgres": "SELECT citing.title AS citing_paper, cited.title AS cited_paper FROM citations c JOIN papers citing ON citing.paper_id = c.citing_paper_id JOIN papers cited ON cited.paper_id = c.cited_paper_id LIMIT 10",
+    "neo4j": "MATCH (citing:Paper)-[:CITES]->(cited:Paper) RETURN citing.title AS citing_paper, cited.title AS cited_paper LIMIT 10"
+  },
+  {
+    "id": "q6_rag_related_papers",
+    "name": "RAG-related papers",
+    "description": "Search selected papers for Retrieval-Augmented Generation references in titles or abstracts.",
+    "postgres": "SELECT paper_id, title, publication_year, cited_by_count FROM papers WHERE lower(title) LIKE '%retrieval%' OR lower(title) LIKE '%rag%' OR lower(abstract) LIKE '%retrieval augmented generation%' ORDER BY cited_by_count DESC LIMIT 10",
+    "neo4j": "MATCH (p:Paper) WHERE toLower(coalesce(p.title, '')) CONTAINS 'retrieval' OR toLower(coalesce(p.title, '')) CONTAINS 'rag' OR toLower(coalesce(p.abstract, '')) CONTAINS 'retrieval augmented generation' RETURN p.paper_id AS paper_id, p.title AS title, p.publication_year AS publication_year, p.cited_by_count AS cited_by_count ORDER BY cited_by_count DESC LIMIT 10"
+  },
+  {
+    "id": "q7_two_hop_citation_paths",
+    "name": "Two-hop citation paths",
+    "description": "Find paper pairs connected by a two-step citation path.",
+    "postgres": "SELECT source.title AS source_paper, target.title AS target_paper, COUNT(*) AS paths FROM citations c1 JOIN citations c2 ON c2.citing_paper_id = c1.cited_paper_id JOIN papers source ON source.paper_id = c1.citing_paper_id JOIN papers target ON target.paper_id = c2.cited_paper_id GROUP BY source.paper_id, source.title, target.paper_id, target.title ORDER BY paths DESC, source_paper, target_paper LIMIT 10",
+    "neo4j": "MATCH (source:Paper)-[:CITES]->(:Paper)-[:CITES]->(target:Paper) RETURN source.title AS source_paper, target.title AS target_paper, count(*) AS paths ORDER BY paths DESC, source_paper, target_paper LIMIT 10"
+  }
+]

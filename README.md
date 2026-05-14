@@ -78,6 +78,17 @@ docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 -f /cypher/const
 docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 -f /cypher/import.cypher
 ```
 
+Run benchmarks:
+
+```bash
+python src/benchmark_queries.py --runs 5 --warmups 1
+```
+
+This creates:
+
+- `benchmarks/results/benchmark_results.csv`
+- `docs/benchmark_results.md`
+
 ## Roadmap
 
 1. Collect a small OpenAlex subset using the OpenAlex API.
@@ -93,6 +104,7 @@ docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 -f /cypher/impor
 - [Project roadmap](docs/project_roadmap.pdf)
 - [Data model](docs/data_model.md)
 - [First query results](docs/query_results.md)
+- [Benchmark results](docs/benchmark_results.md)
 - [Living project report](docs/project_report.md)
 
 ## Repository Structure
