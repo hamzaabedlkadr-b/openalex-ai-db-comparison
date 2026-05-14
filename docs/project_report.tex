@@ -6,71 +6,124 @@
 \usepackage{longtable}
 \usepackage{enumitem}
 \usepackage{titlesec}
+\usepackage[table]{xcolor}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.55em}
 \emergencystretch=2em
-\setlist[itemize]{itemsep=0.15em, topsep=0.25em}
-\setlist[enumerate]{itemsep=0.15em, topsep=0.25em}
+\setlist[itemize]{itemsep=0.18em, topsep=0.25em}
+\setlist[enumerate]{itemsep=0.18em, topsep=0.25em}
 \titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
 \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
 
+\definecolor{pgblue}{HTML}{2563EB}
+\definecolor{neogreen}{HTML}{16A34A}
+\definecolor{ratioPurple}{HTML}{7C3AED}
+\definecolor{lightgray}{HTML}{F3F4F6}
+
+\newcommand{\pgbar}[1]{\textcolor{pgblue}{\rule{#1mm}{6pt}}}
+\newcommand{\neobar}[1]{\textcolor{neogreen}{\rule{#1mm}{6pt}}}
+\newcommand{\ratiobar}[1]{\textcolor{ratioPurple}{\rule{#1mm}{6pt}}}
+
 \begin{document}
 
-\begin{center}
-    {\LARGE \textbf{Project Report}}\\
-    \vspace{0.3em}
-    {\large Comparison between PostgreSQL and Neo4j for AI Research Paper Retrieval and Knowledge Graph Analysis}\\
-    \vspace{0.6em}
-    Data Management 2025/2026\\
-    Last updated: May 14, 2026
-\end{center}
+\pagenumbering{gobble}
+\begin{titlepage}
+    \centering
+    \vspace*{1.2cm}
+    {\LARGE \textbf{Project Report}\par}
+    \vspace{0.5cm}
+    {\large \textbf{Comparison between PostgreSQL and Neo4j for AI Research Paper Retrieval and Knowledge Graph Analysis}\par}
+    \vspace{0.8cm}
+    Data Management 2025/2026\par
+    \vspace{1.2cm}
+    \begin{tabular}{ll}
+        \textbf{Students} & Hamza Abdul Kader, matricola 2230150\\
+                          & Leonardo Marasca, matricola 2217140\\
+        \textbf{Project type} & NoSQL / DBMS comparison\\
+        \textbf{Dataset} & OpenAlex AI research paper subset\\
+        \textbf{Systems compared} & PostgreSQL 16 and Neo4j 5\\
+    \end{tabular}
+    \vfill
+    \textit{This report is the polished PDF version of the living project documentation.}
+\end{titlepage}
 
-\section{Group Members}
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Executive Summary}
+
+This project compares a relational database management system and a graph database using the same dataset of AI-related research papers collected from OpenAlex.
+The relational implementation uses PostgreSQL, while the graph implementation uses Neo4j.
+
+The main objective is not only to check which system is faster, but also to understand how each system represents and queries relationship-heavy scholarly data.
+Scientific papers naturally form a graph: authors write papers, papers cite other papers, papers have topics, and authors become connected through shared publications, topics, and citations.
+
+The work completed so far includes:
 
 \begin{itemize}
-    \item Hamza Abdul Kader, matricola 2230150
-    \item Leonardo Marasca, matricola 2217140
+    \item collecting and cleaning an OpenAlex subset focused on AI, Machine Learning, Large Language Models, and Retrieval-Augmented Generation;
+    \item modeling the same data in PostgreSQL and Neo4j;
+    \item loading both databases with the same CSV files;
+    \item validating that both databases contain matching entity and relationship counts;
+    \item writing equivalent SQL and Cypher queries;
+    \item benchmarking 11 query pairs;
+    \item generating charts and tables for presentation.
 \end{itemize}
 
-\section{Project Goal}
+The current benchmark shows that PostgreSQL is faster on most queries for this small dataset, especially ranking and aggregation queries.
+Neo4j is faster on the author citation network query, where the traversal follows a natural author-to-paper-to-paper-to-author graph pattern.
+The broader conclusion is that PostgreSQL is very efficient for tabular analysis, while Neo4j is often clearer and more direct for graph-shaped questions.
 
-The goal of this project is to compare a relational DBMS and a graph database using the same AI research paper dataset.
-We model and analyze OpenAlex research paper data in PostgreSQL and Neo4j.
+\section{Project Goal and Research Questions}
 
-The comparison focuses on:
+The goal of the project is to compare PostgreSQL and Neo4j on the same AI research paper dataset.
+The comparison focuses on data modeling, query complexity, expressiveness, execution time, and suitability for relationship-heavy analysis.
 
-\begin{itemize}
-    \item data modeling
-    \item query complexity
-    \item expressiveness
-    \item execution time
-    \item suitability for relationship-heavy analysis
-\end{itemize}
+The main research questions are:
 
-The project is related to Artificial Intelligence and Retrieval-Augmented Generation because the selected dataset focuses on AI, Machine Learning, Large Language Models, and RAG-related research papers.
+\begin{enumerate}
+    \item How can the same scholarly dataset be modeled in a relational database and in a graph database?
+    \item Which system makes common analytical queries easier to express?
+    \item Which system performs better on the selected dataset and query workload?
+    \item Are graph-shaped queries more naturally represented in Neo4j than in PostgreSQL?
+    \item What are the practical trade-offs between relational joins and graph traversals?
+\end{enumerate}
 
 \section{Dataset}
 
-The dataset source is OpenAlex.
+\subsection{Source}
+
+The dataset source is OpenAlex, an open catalog of scholarly works, authors, institutions, topics, citations, and related academic metadata.
 
 \begin{itemize}
     \item Main website: \url{https://openalex.org/}
     \item Dataset documentation: \href{https://help.openalex.org/hc/en-us/articles/24397285563671-About-the-data}{OpenAlex About the data}
 \end{itemize}
 
-We access the data through the OpenAlex API and collect a selected subset of research papers related to:
+OpenAlex is appropriate for this project because it already contains the types of entities and relationships that are useful for comparing relational and graph databases:
 
 \begin{itemize}
-    \item retrieval augmented generation
-    \item large language models
-    \item artificial intelligence
-    \item machine learning
+    \item papers and their metadata;
+    \item authorship relationships;
+    \item topics and concepts;
+    \item citation links between papers;
+    \item publication years, titles, abstracts, and citation counts.
 \end{itemize}
 
-We do not use the full OpenAlex dataset because it is very large. Instead, we collect a controlled subset that is large enough for meaningful analysis but small enough to manage in a student project.
+\subsection{Scope of the Collected Subset}
 
-\section{Current Dataset Sample}
+The full OpenAlex dataset is too large for a student project, so we collect a focused subset through the OpenAlex API.
+The selected subset is related to:
+
+\begin{itemize}
+    \item retrieval augmented generation;
+    \item large language models;
+    \item artificial intelligence;
+    \item machine learning.
+\end{itemize}
 
 The current sample was collected with:
 
@@ -78,7 +131,10 @@ The current sample was collected with:
 python src/collect_openalex.py --per-term 75 --per-page 75
 \end{verbatim}
 
-\begin{center}
+\begin{table}[h]
+\centering
+\caption{Current OpenAlex dataset sample}
+\label{tab:dataset-counts}
 \begin{tabular}{|l|r|}
 \hline
 \textbf{Entity} & \textbf{Count} \\
@@ -91,81 +147,163 @@ Paper-topic relationships & 4288 \\
 Citation relationships & 392 \\
 \hline
 \end{tabular}
-\end{center}
+\end{table}
 
-Generated data files are stored locally under \texttt{data/raw/} and \texttt{data/processed/}. These generated files are ignored by git because they can be regenerated from the OpenAlex API.
+Generated data files are stored locally in \texttt{data/raw/} and \texttt{data/processed/}.
+They are ignored by git because they can be regenerated from the OpenAlex API.
+
+\section{Data Collection and Cleaning Pipeline}
+
+The collection script is \texttt{src/collect\_openalex.py}.
+It uses only the Python standard library so the project can run without dependency installation.
+
+The pipeline performs the following operations:
+
+\begin{enumerate}
+    \item Calls the OpenAlex Works API using AI-related search terms.
+    \item Uses cursor pagination to retrieve multiple pages of results.
+    \item Saves raw API objects as JSONL.
+    \item Reconstructs abstracts from OpenAlex abstract inverted indexes when available.
+    \item Extracts paper metadata such as title, year, DOI, OpenAlex ID, citation count, and matched search terms.
+    \item Extracts authors and paper-author relationships.
+    \item Extracts topics and paper-topic relationships.
+    \item Extracts citations where both the citing and cited papers are inside the selected subset.
+    \item Removes duplicate paper-author pairs before database loading.
+    \item Writes normalized CSV files for both PostgreSQL and Neo4j.
+\end{enumerate}
+
+\begin{table}[h]
+\centering
+\caption{Generated CSV files}
+\label{tab:csv-files}
+\begin{tabular}{|p{0.28\textwidth}|p{0.58\textwidth}|}
+\hline
+\textbf{File} & \textbf{Content} \\
+\hline
+\texttt{papers.csv} & One row per selected OpenAlex work. \\
+\hline
+\texttt{authors.csv} & One row per author. \\
+\hline
+\texttt{topics.csv} & One row per topic or concept. \\
+\hline
+\texttt{paper\_authors.csv} & Many-to-many relationship between papers and authors. \\
+\hline
+\texttt{paper\_topics.csv} & Many-to-many relationship between papers and topics. \\
+\hline
+\texttt{citations.csv} & Citation links where both papers are inside the selected subset. \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Data Quality Issue}
+
+During PostgreSQL loading, the project found that OpenAlex can contain duplicate author entries for the same paper.
+This produced a duplicate primary key error in the \texttt{paper\_authors} table.
+
+The fix was to de-duplicate paper-author relationships by \texttt{(paper\_id, author\_id)} during normalization.
+This is a useful project detail because it shows a realistic data cleaning problem and how it was solved.
 
 \section{Repository Structure}
 
 \begin{verbatim}
 src/
-  collect_openalex.py        OpenAlex data collection and normalization
-  benchmark_queries.py       Query timing benchmark runner
+  collect_openalex.py
+  benchmark_queries.py
   generate_benchmark_charts.py
 
-data/raw/                    Raw OpenAlex API output, ignored by git
-data/processed/              Generated CSV files, ignored by git
+database/postgres/
+  schema.sql
+  load.sql
+  queries.sql
 
-database/postgres/           PostgreSQL schema, loading script, SQL queries
-database/neo4j/              Neo4j constraints, import script, Cypher queries
+database/neo4j/
+  constraints.cypher
+  import.cypher
+  queries.cypher
 
 benchmarks/
-  queries.json               Paired SQL/Cypher benchmark queries
+  queries.json
   results/benchmark_results.csv
 
 docs/
   project_proposal.pdf
   project_roadmap.pdf
-  data_model.md
-  query_results.md
-  benchmark_results.md
   project_report.md
+  project_report.tex
   project_report.pdf
+  benchmark_results.md
+  figures/
 \end{verbatim}
 
-\section{Data Collection Pipeline}
+\section{PostgreSQL Relational Model}
 
-The script \texttt{src/collect\_openalex.py} collects data from the OpenAlex Works API.
+PostgreSQL uses a normalized relational schema.
+Entities are represented as tables, and many-to-many relationships are represented as bridge tables.
 
-Main steps:
+\begin{table}[h]
+\centering
+\caption{PostgreSQL tables}
+\label{tab:postgres-schema}
+\begin{tabular}{|p{0.24\textwidth}|p{0.62\textwidth}|}
+\hline
+\textbf{Table} & \textbf{Purpose} \\
+\hline
+\texttt{papers} & Stores paper metadata such as title, year, DOI, abstract, topic, citation count, and OpenAlex URL. \\
+\hline
+\texttt{authors} & Stores author IDs and display names. \\
+\hline
+\texttt{topics} & Stores topic IDs and names. \\
+\hline
+\texttt{paper\_authors} & Bridge table connecting papers and authors. \\
+\hline
+\texttt{paper\_topics} & Bridge table connecting papers and topics. \\
+\hline
+\texttt{citations} & Stores directed paper-to-paper citation links. \\
+\hline
+\end{tabular}
+\end{table}
 
-\begin{enumerate}
-    \item Search OpenAlex works using AI-related search terms.
-    \item Use cursor pagination to retrieve results.
-    \item Store raw API results as JSONL.
-    \item Normalize nested OpenAlex data into CSV files.
-    \item Reconstruct abstracts from OpenAlex abstract inverted indexes when available.
-    \item Keep only citation links where both papers are included in the selected subset.
-    \item Remove duplicate paper-author relationships before database loading.
-\end{enumerate}
-
-The output is designed so the exact same CSV files can be loaded into both PostgreSQL and Neo4j.
-
-\section{PostgreSQL Model}
-
-PostgreSQL uses a normalized relational model.
-
-\begin{itemize}
-    \item \texttt{papers}
-    \item \texttt{authors}
-    \item \texttt{topics}
-    \item \texttt{paper\_authors}
-    \item \texttt{paper\_topics}
-    \item \texttt{citations}
-\end{itemize}
-
-Papers, authors, and topics are stored as entity tables. Many-to-many relationships are represented with bridge tables. Citations are represented as pairs of paper IDs. Indexes are created for common query patterns.
-
-This model is strong for structured aggregation, filtering, sorting, and traditional SQL analysis.
-
-\section{Neo4j Model}
-
-Neo4j uses a graph model.
+This model is strong for:
 
 \begin{itemize}
-    \item Nodes: \texttt{Paper}, \texttt{Author}, \texttt{Topic}
-    \item Relationships: \texttt{AUTHORED}, \texttt{HAS\_TOPIC}, \texttt{CITES}
+    \item aggregations;
+    \item filtering;
+    \item sorting;
+    \item structured joins;
+    \item enforcing primary and foreign keys.
 \end{itemize}
+
+However, graph-shaped questions can become verbose because they require multiple joins or recursive queries.
+
+\section{Neo4j Graph Model}
+
+Neo4j uses nodes and relationships.
+This representation is closer to the natural structure of scholarly data.
+
+\begin{table}[h]
+\centering
+\caption{Neo4j graph model}
+\label{tab:neo4j-model}
+\small
+\begin{tabular}{|p{0.30\textwidth}|p{0.56\textwidth}|}
+\hline
+\textbf{Graph element} & \textbf{Meaning} \\
+\hline
+\texttt{(:Paper)} & Research paper node. \\
+\hline
+\texttt{(:Author)} & Author node. \\
+\hline
+\texttt{(:Topic)} & Topic node. \\
+\hline
+Author \(\rightarrow\) Paper & Authorship relationship, implemented as \texttt{AUTHORED}. \\
+\hline
+Paper \(\rightarrow\) Topic & Topic assignment relationship, implemented as \texttt{HAS\_TOPIC}. \\
+\hline
+Paper \(\rightarrow\) Paper & Directed citation relationship, implemented as \texttt{CITES}. \\
+\hline
+\end{tabular}
+\normalsize
+\end{table}
 
 Example graph patterns:
 
@@ -175,16 +313,34 @@ Example graph patterns:
 (Paper)-[:CITES]->(Paper)
 \end{verbatim}
 
-This model is natural for relationship-heavy questions, such as author collaboration, citation paths, shared topics, and author citation networks.
-
-\section{Docker Setup}
-
-The project uses Docker Compose to run both databases locally:
+This model is strong for:
 
 \begin{itemize}
-    \item PostgreSQL 16
-    \item Neo4j 5
+    \item citation paths;
+    \item author collaboration;
+    \item shared topics;
+    \item author citation networks;
+    \item relationship traversal.
 \end{itemize}
+
+\section{Database Setup and Loading}
+
+The project uses Docker Compose to run both systems locally.
+
+\begin{table}[h]
+\centering
+\caption{Docker services}
+\label{tab:docker-services}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Service} & \textbf{Image} & \textbf{Access} \\
+\hline
+PostgreSQL & \texttt{postgres:16} & \texttt{localhost:5432} \\
+\hline
+Neo4j & \texttt{neo4j:5} & \texttt{http://localhost:7474} \\
+\hline
+\end{tabular}
+\end{table}
 
 Start the databases:
 
@@ -192,30 +348,14 @@ Start the databases:
 docker compose up -d
 \end{verbatim}
 
-Stop the databases:
-
-\begin{verbatim}
-docker compose down
-\end{verbatim}
-
-Neo4j browser:
-
-\begin{verbatim}
-http://localhost:7474
-username: neo4j
-password: openalex123
-\end{verbatim}
-
-\section{Database Loading}
-
-PostgreSQL loading:
+Load PostgreSQL:
 
 \begin{verbatim}
 docker exec openalex-postgres psql -U openalex -d openalex_ai -f /sql/schema.sql
 docker exec openalex-postgres psql -U openalex -d openalex_ai -f /sql/load.sql
 \end{verbatim}
 
-Neo4j loading:
+Load Neo4j:
 
 \begin{verbatim}
 docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 \
@@ -224,13 +364,14 @@ docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 \
   -f /cypher/import.cypher
 \end{verbatim}
 
-Both databases were loaded successfully with the same generated CSV files.
-
 \section{Validation}
 
-We verified that PostgreSQL and Neo4j contain matching data counts.
+After loading both databases, the counts were compared to ensure that the same dataset was present in both systems.
 
-\begin{center}
+\begin{table}[h]
+\centering
+\caption{Validation of loaded data}
+\label{tab:validation}
 \begin{tabular}{|l|r|r|}
 \hline
 \textbf{Data element} & \textbf{PostgreSQL} & \textbf{Neo4j} \\
@@ -243,54 +384,83 @@ Paper-topic / HAS\_TOPIC & 4288 & 4288 \\
 Citations / CITES & 392 & 392 \\
 \hline
 \end{tabular}
-\end{center}
+\end{table}
 
-This confirms that the same dataset was loaded consistently into both database systems.
+The counts match exactly, confirming that the benchmark compares the same logical data in both systems.
 
-\section{Comparison Queries}
+\section{Query Workload}
 
-We created paired SQL and Cypher queries for the following analyses:
+The benchmark contains 11 paired SQL/Cypher queries.
+They are stored in \texttt{benchmarks/queries.json}.
 
-\begin{enumerate}
-    \item Most cited papers
-    \item Authors with the most papers
-    \item Most frequent topics
-    \item Author collaboration pairs
-    \item Citation links inside the selected subset
-    \item RAG-related papers by title or abstract
-    \item Two-hop citation paths
-    \item Authors connected through shared topics
-    \item Papers sharing cited references
-    \item Citation paths up to three hops
-    \item Author citation network
-\end{enumerate}
-
-The initial query results are documented in \texttt{docs/query\_results.md}. The benchmarked queries are stored in \texttt{benchmarks/queries.json}.
+\begin{longtable}{|p{0.08\textwidth}|p{0.31\textwidth}|p{0.47\textwidth}|}
+\caption{Benchmark query workload}
+\label{tab:query-workload}\\
+\hline
+\textbf{ID} & \textbf{Query} & \textbf{Purpose} \\
+\hline
+\endfirsthead
+\hline
+\textbf{ID} & \textbf{Query} & \textbf{Purpose} \\
+\hline
+\endhead
+Q1 & Most cited papers & Rank papers by citation count. \\
+\hline
+Q2 & Authors with the most papers & Count selected papers per author. \\
+\hline
+Q3 & Most frequent topics & Count selected papers per topic. \\
+\hline
+Q4 & Author collaboration pairs & Find authors who worked together most often. \\
+\hline
+Q5 & Citation links inside the subset & Return directed citation relationships. \\
+\hline
+Q6 & RAG-related papers & Search title and abstract for RAG-related terms. \\
+\hline
+Q7 & Two-hop citation paths & Find papers connected by a two-step citation path. \\
+\hline
+Q8 & Authors connected through shared topics & Find author pairs with many shared topics. \\
+\hline
+Q9 & Papers sharing cited references & Find papers that cite the same references. \\
+\hline
+Q10 & Citation paths up to three hops & Find paper pairs connected by citation paths of length two or three. \\
+\hline
+Q11 & Author citation network & Find authors connected when one author's papers cite another author's papers. \\
+\hline
+\end{longtable}
 
 \section{Benchmark Methodology}
 
-The benchmark script is:
+The benchmark is run with:
 
 \begin{verbatim}
 python src/benchmark_queries.py --runs 5 --warmups 1
 \end{verbatim}
 
-Benchmark methodology:
+The methodology is:
 
 \begin{itemize}
-    \item one warmup run per query/system pair
-    \item five measured runs per query/system pair
-    \item PostgreSQL timing uses \texttt{EXPLAIN (ANALYZE, FORMAT JSON)}
-    \item Neo4j timing uses \texttt{PROFILE} through \texttt{cypher-shell --format verbose}
-    \item raw benchmark results are saved in \texttt{benchmarks/results/benchmark\_results.csv}
-    \item benchmark summary is saved in \texttt{docs/benchmark\_results.md}
+    \item one warmup run per query/system pair;
+    \item five measured runs per query/system pair;
+    \item PostgreSQL timing uses \texttt{EXPLAIN (ANALYZE, FORMAT JSON)};
+    \item Neo4j timing uses \texttt{PROFILE} through \texttt{cypher-shell --format verbose};
+    \item raw results are saved in \texttt{benchmarks/results/benchmark\_results.csv};
+    \item Markdown results are saved in \texttt{docs/benchmark\_results.md}.
 \end{itemize}
+
+This benchmark should be interpreted as a local project benchmark, not as a universal ranking of PostgreSQL and Neo4j.
+Performance depends on data size, indexing, cache state, hardware, and query shape.
 
 \section{Benchmark Results}
 
 \small
 \setlength{\tabcolsep}{3pt}
 \begin{longtable}{|p{0.39\textwidth}|r|r|p{0.15\textwidth}|}
+\caption{Average benchmark execution time}
+\label{tab:benchmark-results}\\
+\hline
+\textbf{Query} & \textbf{PostgreSQL avg ms} & \textbf{Neo4j avg ms} & \textbf{Faster system} \\
+\hline
+\endfirsthead
 \hline
 \textbf{Query} & \textbf{PostgreSQL avg ms} & \textbf{Neo4j avg ms} & \textbf{Faster system} \\
 \hline
@@ -321,117 +491,124 @@ Author citation network & 48.214 & 37.400 & Neo4j \\
 \normalsize
 \setlength{\tabcolsep}{6pt}
 
-At the current dataset size, PostgreSQL is faster on most measured queries, especially simple ranking and aggregation queries. Neo4j is faster on the author citation network query, where the query follows a natural author-to-paper-to-paper-to-author graph pattern.
+\section{Benchmark Graphs}
 
-This does not mean one system is always better than the other. The dataset is still small, and performance depends on indexes, cache state, query shape, and graph density.
+\begin{center}
+\refstepcounter{figure}\label{fig:avg-time-bars}
+\textbf{Figure \thefigure: Average query time comparison}
 
-For this project, the strongest conclusion is that PostgreSQL is very efficient for relational aggregation, while Neo4j is often more readable and conceptually direct for graph-shaped analysis.
+\vspace{0.4em}
+\centering
+\scriptsize
+\begin{tabular}{p{0.31\textwidth}p{0.27\textwidth}p{0.27\textwidth}}
+\textbf{Query} & \textbf{PostgreSQL} & \textbf{Neo4j} \\
+\hline
+Most cited papers & \pgbar{0.6} 0.058 ms & \neobar{0.8} 4.2 ms \\
+Top authors & \pgbar{0.8} 2.4 ms & \neobar{1.1} 8.6 ms \\
+Top topics & \pgbar{0.9} 4.8 ms & \neobar{1.4} 15.2 ms \\
+Author collaboration & \pgbar{2.9} 44.4 ms & \neobar{3.8} 65.0 ms \\
+Citation links & \pgbar{0.6} 0.183 ms & \neobar{0.9} 4.4 ms \\
+RAG-related papers & \pgbar{0.8} 3.5 ms & \neobar{1.1} 8.6 ms \\
+Two-hop citations & \pgbar{0.7} 1.6 ms & \neobar{1.1} 8.4 ms \\
+Shared topics & \pgbar{16.5} 309.4 ms & \neobar{30.0} 586.6 ms \\
+Shared references & \pgbar{0.8} 2.2 ms & \neobar{1.0} 7.8 ms \\
+Paths 2--3 hops & \pgbar{0.9} 5.1 ms & \neobar{1.3} 12.4 ms \\
+Author citation network & \pgbar{3.1} 48.2 ms & \neobar{2.5} 37.4 ms \\
+\end{tabular}
+\normalsize
+\end{center}
 
-\section{Benchmark Charts}
+\begin{center}
+\refstepcounter{figure}\label{fig:relative-bars}
+\textbf{Figure \thefigure: Relative query time: Neo4j average divided by PostgreSQL average}
 
-The project also contains SVG charts generated from the benchmark CSV:
+\vspace{0.4em}
+\centering
+\begin{tabular}{p{0.36\textwidth}p{0.48\textwidth}}
+\textbf{Query} & \textbf{Relative time} \\
+\hline
+Most cited papers & \ratiobar{50.0} 72.4x \\
+Top authors & \ratiobar{2.5} 3.6x \\
+Top topics & \ratiobar{2.3} 3.2x \\
+Author collaboration & \ratiobar{1.0} 1.5x \\
+Citation links & \ratiobar{16.9} 24.0x \\
+RAG-related papers & \ratiobar{1.7} 2.4x \\
+Two-hop citations & \ratiobar{3.8} 5.3x \\
+Shared topics & \ratiobar{1.3} 1.9x \\
+Shared references & \ratiobar{2.5} 3.6x \\
+Paths 2--3 hops & \ratiobar{1.7} 2.4x \\
+Author citation network & \textcolor{neogreen}{\rule{0.8mm}{6pt}} 0.8x \\
+\end{tabular}
+\end{center}
 
-\begin{itemize}
-    \item \texttt{docs/figures/benchmark\_average\_times.svg}
-    \item \texttt{docs/figures/benchmark\_relative\_time.svg}
-\end{itemize}
+Figure~\ref{fig:avg-time-bars} shows absolute average execution time.
+Figure~\ref{fig:relative-bars} shows how many times slower or faster Neo4j was relative to PostgreSQL.
+Values above 1x mean Neo4j was slower than PostgreSQL; values below 1x mean Neo4j was faster.
 
-They can be regenerated with:
+\section{Interpretation}
+
+The benchmark has three important interpretations.
+
+\subsection{PostgreSQL is strong for tabular aggregation}
+
+Queries such as most cited papers, most frequent topics, and citation links are very efficient in PostgreSQL.
+These queries match the strengths of a relational DBMS: indexes, joins, grouping, and ordering.
+
+\subsection{Neo4j is clearer for graph-shaped questions}
+
+Neo4j's Cypher syntax is often easier to read when the question is naturally expressed as a path.
+For example, an author citation network can be expressed as:
 
 \begin{verbatim}
-python src/generate_benchmark_charts.py
+(Author)-[:AUTHORED]->(Paper)-[:CITES]->(Paper)<-[:AUTHORED]-(Author)
 \end{verbatim}
 
-These SVG files are useful for the final slides and for visual inspection on GitHub.
+In PostgreSQL, the same query requires several joins across \texttt{paper\_authors}, \texttt{citations}, and \texttt{authors}.
 
-\section{Technical Issue Fixed}
+\subsection{The result depends on dataset size and query shape}
 
-During PostgreSQL loading, we found that OpenAlex can contain duplicate author entries for the same paper. This caused a duplicate primary key error in \texttt{paper\_authors}.
+The current dataset is intentionally small.
+Therefore, the results should not be interpreted as a general statement that PostgreSQL is always faster.
+With larger graphs, deeper traversals, more complex path search, or additional graph indexes/projections, the comparison could change.
 
-Fix:
-
-\begin{itemize}
-    \item changed the normalization logic in \texttt{src/collect\_openalex.py}
-    \item de-duplicated paper-author relationships by \texttt{(paper\_id, author\_id)}
-    \item regenerated CSV files
-    \item reloaded PostgreSQL successfully
-\end{itemize}
-
-This is useful to mention in the final presentation because it shows a realistic data cleaning issue.
-
-\section{Current Git History}
-
-\begin{verbatim}
-7bb7f82 Add graph-specific benchmark queries
-6bc2e6b Add benchmark visualization charts
-19d3df9 Add query benchmarking results
-4626f8f Add living project report
-e4a7b0a Load databases and record first query results
-b30eb6b Add OpenAlex data pipeline scaffold
-a465622 Initialize project documentation
-\end{verbatim}
-
-\section{Current Status}
-
-Completed:
+\section{Main Findings}
 
 \begin{itemize}
-    \item project proposal approved
-    \item repository created and pushed to GitHub
-    \item project roadmap written
-    \item OpenAlex data collector implemented
-    \item PostgreSQL schema created
-    \item Neo4j import model created
-    \item Docker Compose setup created
-    \item first real OpenAlex sample collected
-    \item PostgreSQL loaded
-    \item Neo4j loaded
-    \item equivalent SQL/Cypher queries executed
-    \item benchmark script added
-    \item timing benchmark executed
-    \item benchmark results documented
-    \item benchmark charts generated
-    \item graph-specific query pairs added
+    \item The same OpenAlex dataset was successfully represented in both PostgreSQL and Neo4j.
+    \item PostgreSQL and Neo4j were loaded with matching entity and relationship counts.
+    \item PostgreSQL was faster on 10 out of 11 benchmarked queries.
+    \item Neo4j was faster on the author citation network query.
+    \item Neo4j query syntax is often more natural for relationship traversal.
+    \item PostgreSQL is highly efficient for relational aggregation and sorting.
+    \item The most useful comparison is not only speed, but also modeling clarity and query expressiveness.
 \end{itemize}
 
-Next:
+\section{Limitations}
 
 \begin{itemize}
-    \item optionally increase the dataset size and rerun benchmarks
-    \item start shaping the final presentation structure
-    \item write the presentation storyline and slide outline
+    \item The dataset is a selected subset, not the full OpenAlex dataset.
+    \item Benchmark results were produced on a local machine and depend on local hardware.
+    \item Only 11 queries were benchmarked.
+    \item The benchmark focuses on server-reported query time, not full application-level latency.
+    \item The Neo4j model uses the basic graph database; advanced graph data science projections were not used.
 \end{itemize}
 
-\section{Update Log}
-
-\subsection*{May 14, 2026}
+\section{Future Work}
 
 \begin{itemize}
-    \item Added four graph-specific query pairs: author shared topics, papers sharing cited references, citation paths up to three hops, and author citation network.
-    \item Updated PostgreSQL and Neo4j query files.
-    \item Reran the benchmark with 11 query pairs.
-    \item Regenerated benchmark charts.
-    \item Updated benchmark results and report interpretation.
-    \item Added presentation-ready benchmark charts.
-    \item Added repeatable benchmark infrastructure.
-    \item Created the detailed living project report.
-    \item Loaded PostgreSQL and Neo4j with the same OpenAlex CSV files.
-    \item Verified matching counts across both systems.
-    \item Fixed duplicate paper-author relationships in the collector.
+    \item Increase the dataset size and rerun the benchmark.
+    \item Add deeper citation path queries.
+    \item Add more RAG-specific retrieval queries.
+    \item Add visual graph exploration examples in Neo4j Browser.
+    \item Prepare the final presentation slides and live demo.
 \end{itemize}
 
-\subsection*{May 12, 2026}
+\section{Conclusion}
 
-\begin{itemize}
-    \item Project proposal was approved by Professor Roberto Maria Delfino.
-\end{itemize}
+This project demonstrates a practical comparison between PostgreSQL and Neo4j using AI research paper data from OpenAlex.
+The relational model is efficient and structured, while the graph model is expressive and natural for relationship-heavy analysis.
 
-\subsection*{May 11, 2026}
-
-\begin{itemize}
-    \item Created the project proposal PDF.
-    \item Created the roadmap PDF.
-    \item Created the GitHub repository documentation.
-\end{itemize}
+The current results show PostgreSQL as faster for most queries on the small benchmark dataset, but Neo4j provides clearer graph traversal semantics and outperforms PostgreSQL on the author citation network query.
+This supports a balanced conclusion: PostgreSQL is a strong choice for structured analytical workloads, while Neo4j becomes especially valuable when the main questions are about relationships, paths, and networks.
 
 \end{document}
