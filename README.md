@@ -80,6 +80,7 @@ Services:
 | System | URL / Host | Credentials |
 |---|---|---|
 | PostgreSQL | `localhost:5432` | user `openalex`, password `openalex`, database `openalex_ai` |
+| PostgreSQL web UI | `http://localhost:8080` | system `PostgreSQL`, server `postgres`, user `openalex`, password `openalex`, database `openalex_ai` |
 | Neo4j Browser | `http://localhost:7474` | user `neo4j`, password `openalex123` |
 
 ### 3. Load PostgreSQL
@@ -128,7 +129,29 @@ Use this flow for the 5-minute project demo.
 docker compose ps
 ```
 
-Expected result: both `openalex-postgres` and `openalex-neo4j` should be running.
+Expected result: `openalex-postgres`, `openalex-neo4j`, and `openalex-adminer` should be running.
+
+Visual database pages:
+
+- PostgreSQL tables: `http://localhost:8080`
+- Neo4j graph browser: `http://localhost:7474`
+
+Adminer PostgreSQL login:
+
+```text
+System: PostgreSQL
+Server: postgres
+Username: openalex
+Password: openalex
+Database: openalex_ai
+```
+
+Neo4j login:
+
+```text
+Username: neo4j
+Password: openalex123
+```
 
 ### Demo Part 2: Validate Matching Data Counts
 

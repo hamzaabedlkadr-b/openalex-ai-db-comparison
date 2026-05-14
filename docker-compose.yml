@@ -26,6 +26,14 @@ services:
       - ./data/processed:/import
       - ./database/neo4j:/cypher:ro
 
+  adminer:
+    image: adminer:latest
+    container_name: openalex-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
 volumes:
   postgres-data:
   neo4j-data:
