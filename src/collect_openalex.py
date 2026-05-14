@@ -177,7 +177,7 @@ def normalize_works(works: dict[str, dict[str, Any]]) -> dict[str, list[dict[str
     collected_ids = set(works.keys())
     papers: list[dict[str, str]] = []
     authors: dict[str, dict[str, str]] = {}
-    paper_authors: list[dict[str, str]] = []
+    paper_authors: dict[tuple[str, str], dict[str, str]] = {}
     topics: dict[str, dict[str, str]] = {}
     paper_topics: dict[tuple[str, str, str], dict[str, str]] = {}
     citations: list[dict[str, str]] = []
@@ -212,14 +212,12 @@ def normalize_works(works: dict[str, dict[str, Any]]) -> dict[str, list[dict[str
                 "author_id": author_id,
                 "display_name": author.get("display_name") or "",
             }
-            paper_authors.append(
-                {
-                    "paper_id": paper_id,
-                    "author_id": author_id,
-                    "author_position": authorship.get("author_position") or "",
-                    "is_corresponding": str(bool(authorship.get("is_corresponding"))).lower(),
-                }
-            )
+            paper_authors[(paper_id, author_id)] = {
+                "paper_id": paper_id,
+                "author_id": author_id,
+                "author_position": authorship.get("author_position") or "",
+                "is_corresponding": str(bool(authorship.get("is_corresponding"))).lower(),
+            }
 
         work_topics, work_paper_topics = extract_topic_rows(work)
         for topic in work_topics:
@@ -240,7 +238,7 @@ def normalize_works(works: dict[str, dict[str, Any]]) -> dict[str, list[dict[str
     return {
         "papers": papers,
         "authors": sorted(authors.values(), key=lambda row: row["author_id"]),
-        "paper_authors": sorted(paper_authors, key=lambda row: (row["paper_id"], row["author_id"])),
+        "paper_authors": sorted(paper_authors.values(), key=lambda row: (row["paper_id"], row["author_id"])),
         "topics": sorted(topics.values(), key=lambda row: row["topic_id"]),
         "paper_topics": sorted(paper_topics.values(), key=lambda row: (row["paper_id"], row["topic_id"], row["source"])),
         "citations": sorted(citations, key=lambda row: (row["citing_paper_id"], row["cited_paper_id"])),

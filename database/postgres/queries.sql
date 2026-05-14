@@ -31,7 +31,7 @@ JOIN paper_authors pa2
    AND pa1.author_id < pa2.author_id
 JOIN authors a1 ON a1.author_id = pa1.author_id
 JOIN authors a2 ON a2.author_id = pa2.author_id
-GROUP BY a1.display_name, a2.display_name
+GROUP BY a1.author_id, a1.display_name, a2.author_id, a2.display_name
 ORDER BY shared_papers DESC, author_1, author_2
 LIMIT 10;
 

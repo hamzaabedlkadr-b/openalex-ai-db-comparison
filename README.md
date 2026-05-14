@@ -57,8 +57,8 @@ docker compose up -d
 Load PostgreSQL:
 
 ```bash
-psql -h localhost -U openalex -d openalex_ai -f database/postgres/schema.sql
-psql -h localhost -U openalex -d openalex_ai -f database/postgres/load.sql
+docker exec openalex-postgres psql -U openalex -d openalex_ai -f /sql/schema.sql
+docker exec openalex-postgres psql -U openalex -d openalex_ai -f /sql/load.sql
 ```
 
 Neo4j is available at:
@@ -70,6 +70,13 @@ password: openalex123
 ```
 
 Run `database/neo4j/constraints.cypher`, then `database/neo4j/import.cypher` in the Neo4j browser.
+
+Or load Neo4j from the command line:
+
+```bash
+docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 -f /cypher/constraints.cypher
+docker exec openalex-neo4j cypher-shell -u neo4j -p openalex123 -f /cypher/import.cypher
+```
 
 ## Roadmap
 
@@ -85,6 +92,7 @@ Run `database/neo4j/constraints.cypher`, then `database/neo4j/import.cypher` in 
 - [Project proposal](docs/project_proposal.pdf)
 - [Project roadmap](docs/project_roadmap.pdf)
 - [Data model](docs/data_model.md)
+- [First query results](docs/query_results.md)
 
 ## Repository Structure
 

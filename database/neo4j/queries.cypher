@@ -19,7 +19,8 @@ LIMIT 10;
 // Q4. Author collaboration pairs.
 MATCH (a1:Author)-[:AUTHORED]->(p:Paper)<-[:AUTHORED]-(a2:Author)
 WHERE a1.author_id < a2.author_id
-RETURN a1.display_name AS author_1, a2.display_name AS author_2, count(p) AS shared_papers
+WITH a1, a2, count(p) AS shared_papers
+RETURN a1.display_name AS author_1, a2.display_name AS author_2, shared_papers
 ORDER BY shared_papers DESC, author_1, author_2
 LIMIT 10;
 
