@@ -736,6 +736,66 @@ The current dataset is intentionally small.
 Therefore, the results should not be interpreted as a general statement that PostgreSQL is always faster.
 With larger graphs, deeper traversals, more complex path search, or additional graph indexes/projections, the comparison could change.
 
+\section{Connection to Course Material}
+
+The project is connected to several topics discussed in the Data Management course.
+The connection is not only theoretical: the course concepts directly influenced the way the data was modeled, loaded, queried, and evaluated.
+
+\begin{table}[H]
+\centering
+\caption{Course concepts reflected in the project}
+\label{tab:course-connection}
+\small
+\begin{tabular}{|p{0.27\textwidth}|p{0.30\textwidth}|p{0.32\textwidth}|}
+\hline
+\textbf{Course topic} & \textbf{Concept} & \textbf{How it appears in the project} \\
+\hline
+Graph databases & Relationships can be represented as explicit edges instead of being reconstructed through joins. & Neo4j stores \texttt{AUTHORED}, \texttt{HAS\_TOPIC}, and \texttt{CITES} as relationships. \\
+\hline
+Neo4j property graph model & Nodes have labels and properties; relationships have types and connect nodes. & We use \texttt{Paper}, \texttt{Author}, and \texttt{Topic} nodes with properties such as IDs, titles, years, and citation counts. \\
+\hline
+Cypher query language & Graph queries are expressed as path patterns using \texttt{MATCH}. & Queries such as author citation networks are written as paths: author \(\rightarrow\) paper \(\rightarrow\) cited paper \(\rightarrow\) author. \\
+\hline
+Relational model and joins & Relationships in a relational schema are represented through foreign keys and join tables. & PostgreSQL uses \texttt{paper\_authors}, \texttt{paper\_topics}, and \texttt{citations} to reconstruct relationships through SQL joins. \\
+\hline
+Query processing and operator evaluation & SQL queries are evaluated through operators such as selection, projection, join, grouping, sorting, and aggregation. & Benchmark queries include filters, joins, \texttt{GROUP BY}, \texttt{ORDER BY}, and recursive/path-like logic. PostgreSQL timing is measured with \texttt{EXPLAIN ANALYZE}. \\
+\hline
+File organization and indexes & Access paths and indexes influence query cost. & PostgreSQL schema defines primary keys and indexes; Neo4j uses uniqueness constraints and indexes for node lookup before traversal. \\
+\hline
+\end{tabular}
+\normalsize
+\end{table}
+
+\subsection{Relational Joins vs Graph Traversal}
+
+One of the central course ideas is that relationship-heavy data can be handled in different ways.
+In a relational DBMS, a relationship is normally reconstructed at query time using joins.
+In a graph DBMS, a relationship is stored as a first-class edge and can be traversed directly.
+
+Our project demonstrates this difference with citation and authorship data.
+For example, the author citation network query has the following logical structure:
+
+\begin{verbatim}
+Author -> Paper -> Cited Paper -> Author
+\end{verbatim}
+
+In PostgreSQL, this path is rebuilt by joining \texttt{paper\_authors}, \texttt{citations}, and \texttt{authors}.
+In Neo4j, the same path is expressed directly in Cypher.
+This is why the project is a practical example of the lecture distinction between relationships-as-joins and relationships-as-edges.
+
+\subsection{Why RDF and Data Warehousing Were Not Used}
+
+The course also covers RDF databases and data warehousing.
+Those topics are related to data management, but they are not the project model we selected.
+
+RDF represents data as triples and is useful for semantic web and ontology-oriented data.
+Our implementation uses Neo4j's property graph model instead, because the approved project topic was a DBMS comparison between a relational database and a graph database.
+
+Data warehousing focuses on analytical schemas such as star schemas and OLAP analysis.
+Our project is not a data warehouse project: we did not design a fact table, dimensions, or OLAP sessions.
+Instead, we compare PostgreSQL and Neo4j on the same operational/analytical OpenAlex subset.
+This distinction is important because the evaluation criteria are different.
+
 \section{Main Findings}
 
 \begin{itemize}
