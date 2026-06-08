@@ -1,9 +1,11 @@
 \documentclass[11pt]{article}
 
 \usepackage[margin=0.85in]{geometry}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
 \usepackage{enumitem}
 \usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
 \usepackage[table]{xcolor}
 \usepackage{graphicx}
 \usepackage{float}
@@ -28,12 +30,12 @@
     \begin{tabular}{ll}
         \textbf{Students} & Hamza Abdul Kader, 2230150\\
                           & Leonardo Marasca, 2217140\\
-        \textbf{Purpose} & Simple explanation for presenting and discussing the project\\
+        \textbf{Purpose} & Detailed explanation for understanding, presenting, and defending the project\\
         \textbf{Dataset} & OpenAlex AI/RAG research paper subset\\
         \textbf{Systems} & PostgreSQL 16 and Neo4j 5\\
     \end{tabular}
     \vfill
-    \textit{This document explains what we did in chronological order, in simple words.}
+    \textit{This document assumes the reader did not study all lecture slides and explains both the technical implementation and the conceptual reasons behind it.}
 \end{titlepage}
 
 \tableofcontents
@@ -42,6 +44,21 @@
 \section{One-Sentence Summary}
 
 We built a project that collects AI-related research paper data from OpenAlex, loads the same cleaned dataset into PostgreSQL and Neo4j, runs equivalent SQL and Cypher queries, benchmarks them, and compares which database model is better for each type of question.
+
+\section{How Leo Should Use This Document}
+
+This file is meant to make the project understandable without needing to read every lecture slide first.
+It explains three things:
+
+\begin{itemize}
+    \item \textbf{What we built}: the dataset, scripts, databases, queries, benchmarks, report, and presentation.
+    \item \textbf{Why we built it this way}: the database concepts behind each choice.
+    \item \textbf{What to do now}: how to prepare for the presentation and what points to be ready to explain.
+\end{itemize}
+
+Leo does not need to memorize every command.
+The important goal is to understand the story clearly enough to answer questions.
+If the professor asks about a file, a query, or a modeling decision, Leo should be able to explain the reasoning in simple words.
 
 \section{What the Project Is About}
 
@@ -65,6 +82,87 @@ This is a good dataset because research papers naturally have many relationships
 
 This makes it suitable for comparing a relational model and a graph model.
 
+\section{Concepts Leo Needs Before the Project Details}
+
+This section explains the basic technical ideas used in the project.
+These are the concepts that matter most for understanding the work.
+
+\begin{longtable}{|p{0.22\textwidth}|p{0.68\textwidth}|}
+\hline
+\textbf{Concept} & \textbf{Meaning in simple words} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Concept} & \textbf{Meaning in simple words} \\
+\hline
+\endhead
+DBMS & A Database Management System. It is software used to store, query, update, and manage data. PostgreSQL and Neo4j are both DBMSs, but they organize data differently. \\
+\hline
+Relational database & A database based on tables. Data is stored in rows and columns. PostgreSQL is relational. \\
+\hline
+Graph database & A database based on nodes and relationships. Neo4j is a graph database. It is useful when the relationships are as important as the entities. \\
+\hline
+Table & A structured collection of rows. For example, the \texttt{papers} table stores one row per paper. \\
+\hline
+Node & A graph object. In our Neo4j database, a paper is a \texttt{Paper} node, an author is an \texttt{Author} node, and a topic is a \texttt{Topic} node. \\
+\hline
+Relationship / edge & A connection between two nodes. For example, \texttt{(Author)-[:AUTHORED]->(Paper)} means an author wrote a paper. \\
+\hline
+Property & A value stored on a node or relationship. For example, a paper node has properties such as title, year, DOI, and citation count. \\
+\hline
+Primary key & A column or group of columns that uniquely identifies a row. For example, \texttt{paper\_id} uniquely identifies a paper in PostgreSQL. \\
+\hline
+Foreign key & A column that points to a row in another table. It protects the consistency of relationships between tables. \\
+\hline
+Bridge table & A table used to represent a many-to-many relationship. For example, one paper can have many authors and one author can write many papers, so we use \texttt{paper\_authors}. \\
+\hline
+Index & A data structure that helps the DBMS find rows or nodes faster. It is like an organized lookup path. \\
+\hline
+SQL & The query language used by PostgreSQL. It is very strong for filtering, joining, grouping, sorting, and aggregation. \\
+\hline
+Cypher & The query language used by Neo4j. It is strong for expressing graph patterns such as paths between authors, papers, and topics. \\
+\hline
+API & A way for programs to request data from another system. We use the OpenAlex API to download paper data. \\
+\hline
+JSON & A nested data format commonly returned by APIs. OpenAlex returns paper data as JSON objects. \\
+\hline
+JSONL & A file format where each line is one JSON object. We save raw OpenAlex works as JSONL because it is convenient for API records. \\
+\hline
+CSV & A simple table-like file format. We transform JSON into CSV because both PostgreSQL and Neo4j can import CSV easily. \\
+\hline
+ETL & Extract, Transform, Load. Extract data from OpenAlex, transform it into clean tables, then load it into PostgreSQL and Neo4j. \\
+\hline
+Benchmark & A controlled measurement of execution time. We run equivalent queries in both systems and compare average time. \\
+\hline
+Warmup run & A run that is not counted in the final result. It reduces the effect of first-time setup and cache behavior. \\
+\hline
+\end{longtable}
+
+\subsection{The Core Difference: Joins vs Traversal}
+
+The main conceptual difference is this:
+
+\begin{itemize}
+    \item In PostgreSQL, relationships are reconstructed by joining tables.
+    \item In Neo4j, relationships are stored directly as edges and traversed as paths.
+\end{itemize}
+
+Example:
+
+\begin{quote}
+Which authors are connected because one author's paper cites another author's paper?
+\end{quote}
+
+In PostgreSQL, we need several joins between \texttt{paper\_authors}, \texttt{citations}, and \texttt{authors}.
+In Neo4j, we write the relationship as a path:
+
+\begin{verbatim}
+(Author)-[:AUTHORED]->(Paper)-[:CITES]->(Paper)<-[:AUTHORED]-(Author)
+\end{verbatim}
+
+This is the central reason our project is meaningful.
+The same real-world question can be represented in two different database models.
+
 \section{What We Chose and Why}
 
 At the beginning, we had to choose a project topic and a dataset.
@@ -85,6 +183,40 @@ The official links used in the proposal were:
 \end{itemize}
 
 The professor approved the proposal, so we continued with this topic.
+
+\section{The Full Project Pipeline}
+
+The full pipeline is:
+
+\begin{verbatim}
+OpenAlex API
+  -> raw JSONL records
+  -> cleaned normalized CSV files
+  -> PostgreSQL relational tables
+  -> Neo4j graph nodes and relationships
+  -> equivalent SQL and Cypher queries
+  -> benchmark results
+  -> charts, report, and presentation
+\end{verbatim}
+
+Every step has a reason:
+
+\begin{itemize}
+    \item We use OpenAlex because it gives real academic data.
+    \item We save raw JSONL so the original API records are preserved.
+    \item We produce CSV files because both databases can load the same files.
+    \item We load the same logical data into PostgreSQL and Neo4j so the comparison is fair.
+    \item We write equivalent queries so each system answers the same question.
+    \item We benchmark execution time to compare behavior, not only syntax.
+    \item We create a report and slides so the project can be explained from requirements to conclusions.
+\end{itemize}
+
+The most important fairness principle is:
+
+\begin{quote}
+Both PostgreSQL and Neo4j must receive the same cleaned dataset.
+Otherwise, the comparison would not be valid.
+\end{quote}
 
 \section{Repository Structure}
 
@@ -193,6 +325,63 @@ Transform: clean and normalize JSON
 Load: import CSV files into PostgreSQL and Neo4j
 \end{verbatim}
 
+\subsection{Why We Did Not Load the Raw JSON Directly}
+
+OpenAlex records are rich but messy for direct database comparison.
+A single work can contain nested authorships, nested topics, abstract information, IDs, URLs, citation references, and metadata.
+If we loaded this raw structure directly into only one database, the comparison would become unfair and hard to explain.
+
+Instead, we normalized the information into a shared tabular format first.
+This gives us one clean intermediate dataset.
+Then both PostgreSQL and Neo4j are loaded from that same intermediate dataset.
+
+This is important because it separates two concerns:
+
+\begin{itemize}
+    \item \textbf{Data preparation}: done once in Python.
+    \item \textbf{Database comparison}: done after both databases contain the same cleaned data.
+\end{itemize}
+
+\subsection{Important ETL Decisions}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{0.30\textwidth}|p{0.58\textwidth}|}
+\hline
+\textbf{Decision} & \textbf{Reason} \\
+\hline
+Use a focused AI/RAG subset & The complete OpenAlex dataset is very large. A focused subset is easier to run locally and still contains useful paper-author-topic-citation relationships. \\
+\hline
+Keep raw JSONL & It preserves the original API response, so the transformation can be checked later. \\
+\hline
+Create normalized CSV files & CSV is easy to import into both PostgreSQL and Neo4j, which makes the comparison fairer. \\
+\hline
+Deduplicate entities & The same author, topic, or relationship can appear multiple times in API results. Duplicates would break primary keys or distort counts. \\
+\hline
+Keep only internal citations & Many OpenAlex papers cite works outside our selected subset. We keep citation edges only when both citing and cited papers are present, so both databases can represent the relationship completely. \\
+\hline
+Reconstruct abstracts & OpenAlex abstracts can be stored as an inverted index. We convert them back into readable text so text search queries are possible. \\
+\hline
+\end{tabular}
+\caption{Main ETL decisions}
+\end{table}
+
+\subsection{What ``Normalize'' Means Here}
+
+Normalization means splitting data into separate logical tables instead of repeating everything inside one huge table.
+For example, if a paper has ten authors, we do not repeat the full paper row ten times.
+Instead:
+
+\begin{itemize}
+    \item the paper appears once in \texttt{papers};
+    \item each author appears once in \texttt{authors};
+    \item the connections appear in \texttt{paper\_authors}.
+\end{itemize}
+
+This reduces duplication and makes relationships explicit.
+It also prepares the data for PostgreSQL tables and Neo4j graph relationships.
+
 \section{Step 3: Dataset Size}
 
 The current dataset contains:
@@ -269,6 +458,70 @@ The tables are:
     \item \texttt{citations}.
 \end{itemize}
 
+\subsection{Why These Tables Exist}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{0.25\textwidth}|p{0.63\textwidth}|}
+\hline
+\textbf{Table} & \textbf{Purpose} \\
+\hline
+\texttt{papers} & Stores one row per selected OpenAlex work. Important columns include title, year, DOI, abstract, citation count, and OpenAlex URL. \\
+\hline
+\texttt{authors} & Stores one row per author. The same author may write many papers, so we store the author once. \\
+\hline
+\texttt{topics} & Stores one row per OpenAlex topic. Topics are reused by many papers. \\
+\hline
+\texttt{paper\_authors} & Bridge table connecting papers and authors. It also stores author position and corresponding-author information. \\
+\hline
+\texttt{paper\_topics} & Bridge table connecting papers and topics. It also stores the topic score and whether the topic came from the primary topic or related topics. \\
+\hline
+\texttt{citations} & Stores internal citation links from one selected paper to another selected paper. \\
+\hline
+\end{tabular}
+\caption{PostgreSQL table purpose}
+\end{table}
+
+\subsection{Primary Keys, Foreign Keys, and Indexes}
+
+PostgreSQL uses primary keys to guarantee uniqueness.
+For example, \texttt{papers.paper\_id} is the primary key of \texttt{papers}.
+This means the same paper cannot be inserted twice with the same ID.
+
+PostgreSQL uses foreign keys to guarantee valid relationships.
+For example, \texttt{paper\_authors.paper\_id} references \texttt{papers.paper\_id}.
+This prevents a relationship from pointing to a paper that does not exist.
+
+Indexes are added on columns commonly used in filters, joins, or ordering:
+
+\begin{itemize}
+    \item \texttt{publication\_year}, useful for year filters;
+    \item \texttt{cited\_by\_count}, useful for ranking papers by citation count;
+    \item \texttt{author\_id}, useful for author joins;
+    \item \texttt{topic\_id}, useful for topic joins;
+    \item \texttt{cited\_paper\_id}, useful for citation lookup.
+\end{itemize}
+
+This connects to the course topic of file organization and access paths:
+the DBMS can use indexes to avoid scanning everything when a faster lookup is available.
+
+\subsection{How PostgreSQL Represents Relationships}
+
+PostgreSQL does not store graph edges directly.
+It represents relationships through rows in tables.
+
+Example:
+
+\begin{verbatim}
+papers.paper_id
+authors.author_id
+paper_authors(paper_id, author_id)
+\end{verbatim}
+
+To find which authors wrote which papers, SQL joins these tables.
+This is powerful and standard, but relationship-heavy queries can become long because every relationship must be reconstructed from tables.
+
 \subsection{Loading PostgreSQL}
 
 Run:
@@ -314,6 +567,63 @@ Relationships:
     \item \texttt{(Paper)-[:HAS\_TOPIC]->(Topic)};
     \item \texttt{(Paper)-[:CITES]->(Paper)}.
 \end{itemize}
+
+\subsection{Why This Graph Model Fits OpenAlex}
+
+OpenAlex data is naturally graph-shaped.
+The main objects are papers, authors, and topics.
+The most interesting information is often not inside one object, but between objects:
+
+\begin{itemize}
+    \item which author wrote which paper;
+    \item which paper belongs to which topic;
+    \item which paper cites another paper;
+    \item which authors are connected through citations or shared topics.
+\end{itemize}
+
+Neo4j stores these connections directly.
+That makes path questions easier to express.
+For example, a citation network question can be written as a readable chain of nodes and relationships.
+
+\subsection{Neo4j Labels, Properties, and Constraints}
+
+In Neo4j:
+
+\begin{itemize}
+    \item \textbf{labels} classify nodes, such as \texttt{Paper}, \texttt{Author}, and \texttt{Topic};
+    \item \textbf{properties} store values, such as title, display name, year, and citation count;
+    \item \textbf{relationships} connect nodes, such as \texttt{AUTHORED}, \texttt{HAS\_TOPIC}, and \texttt{CITES}.
+\end{itemize}
+
+We also define uniqueness constraints:
+
+\begin{itemize}
+    \item every \texttt{Paper} has a unique \texttt{paper\_id};
+    \item every \texttt{Author} has a unique \texttt{author\_id};
+    \item every \texttt{Topic} has a unique \texttt{topic\_id}.
+\end{itemize}
+
+These constraints play a similar role to primary keys in PostgreSQL.
+They make importing safer and make node lookup more efficient.
+
+\subsection{How Neo4j Represents Relationships}
+
+In Neo4j, the relationship is part of the stored model.
+For example:
+
+\begin{verbatim}
+(a:Author)-[:AUTHORED]->(p:Paper)
+\end{verbatim}
+
+This directly means:
+
+\begin{quote}
+Author \texttt{a} wrote paper \texttt{p}.
+\end{quote}
+
+We do not need a bridge table in Neo4j.
+The edge itself is the relationship.
+This is why Neo4j is easier to read for path-based questions.
 
 \subsection{Loading Neo4j}
 
@@ -389,6 +699,58 @@ The manual Cypher queries are in:
 database/neo4j/queries.cypher
 \end{verbatim}
 
+\subsection{What the 11 Queries Test}
+
+The query set is designed to cover both normal analytical questions and graph-style relationship questions.
+This is important because a fair DBMS comparison should not use only one easy query.
+
+\begin{longtable}{|p{0.23\textwidth}|p{0.55\textwidth}|p{0.12\textwidth}|}
+\hline
+\textbf{Query} & \textbf{What it tests} & \textbf{Main shape} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Query} & \textbf{What it tests} & \textbf{Main shape} \\
+\hline
+\endhead
+Most cited papers & Sort papers by citation count and return the top results. & Ranking \\
+\hline
+Top authors & Count how many selected papers each author has. & Join + group \\
+\hline
+Top topics & Count how often each topic appears in the selected papers. & Join + group \\
+\hline
+Author collaboration pairs & Find authors who appear together on the same papers. & Self-join / pattern \\
+\hline
+Citation links & Return citation edges where both papers are inside our subset. & Relationship lookup \\
+\hline
+RAG-related papers & Search titles and abstracts for RAG-related terms. & Text filter \\
+\hline
+Two-hop citation paths & Find paper pairs connected through two citation steps. & Path query \\
+\hline
+Shared topics & Find author pairs connected by common topics. & Multi-join / graph pattern \\
+\hline
+Shared references & Find papers that cite the same internal references. & Self-join / graph pattern \\
+\hline
+Paths up to 3 hops & Find citation paths of length two or three. & Recursive/path query \\
+\hline
+Author citation network & Find authors connected because one author's paper cites another author's paper. & Graph traversal \\
+\hline
+\end{longtable}
+
+\subsection{What ``Equivalent Query'' Means}
+
+Equivalent does not mean the SQL and Cypher text look identical.
+They cannot look identical because the data models are different.
+Equivalent means:
+
+\begin{quote}
+Both queries answer the same logical question over the same data.
+\end{quote}
+
+For example, PostgreSQL may need five joined tables while Neo4j needs one path pattern.
+That is acceptable because each query uses the natural language of its DBMS.
+The important thing is that the result meaning is the same.
+
 \subsection{Example Query}
 
 Question:
@@ -444,6 +806,68 @@ benchmarks/results/benchmark_results.csv
 docs/benchmark_results.md
 \end{verbatim}
 
+\subsection{Why We Use Warmups and Averages}
+
+One query execution time can be noisy.
+The computer may be busy, the database may be loading metadata, or some data may already be cached in memory.
+To reduce random effects, the benchmark uses:
+
+\begin{itemize}
+    \item warmup runs, which are ignored;
+    \item multiple measured runs;
+    \item average time for comparison.
+\end{itemize}
+
+This does not make the benchmark perfect, but it makes it more reliable than running each query once manually.
+
+\subsection{Why PostgreSQL Uses EXPLAIN ANALYZE}
+
+\texttt{EXPLAIN ANALYZE} runs the SQL query and reports the execution time and query plan.
+The query plan is the DBMS's internal strategy, such as:
+
+\begin{itemize}
+    \item scan a table;
+    \item use an index;
+    \item join tables;
+    \item group rows;
+    \item sort results.
+\end{itemize}
+
+This connects directly to the course topic of query processing.
+The DBMS does not simply ``read SQL'' line by line.
+It builds an execution plan and chooses physical operators.
+
+\subsection{Why Neo4j Uses PROFILE}
+
+\texttt{PROFILE} runs the Cypher query and shows the graph execution plan.
+It can show operations such as:
+
+\begin{itemize}
+    \item find nodes by label or index;
+    \item expand relationships;
+    \item filter paths;
+    \item aggregate results;
+    \item sort and limit output.
+\end{itemize}
+
+This is the graph equivalent of looking at how the database executes the query internally.
+
+\subsection{What the Benchmark Does Not Prove}
+
+The benchmark is useful, but it should be interpreted carefully.
+It does not prove that PostgreSQL is always better than Neo4j.
+It proves that, for our current dataset, machine, indexes, and query set, PostgreSQL was faster on most measured queries and Neo4j was faster on the author citation network query.
+
+Important limitations:
+
+\begin{itemize}
+    \item the dataset is a small OpenAlex subset, not the full OpenAlex database;
+    \item the benchmark runs locally, not on a production server;
+    \item both systems are containerized through Docker;
+    \item query performance can change with more data, different indexes, or different query patterns;
+    \item Neo4j may become more useful for deeper graph traversal and interactive network exploration.
+\end{itemize}
+
 \section{Step 10: Benchmark Results}
 
 The main result:
@@ -484,6 +908,70 @@ Interpretation:
     \item PostgreSQL is very strong for structured tables, sorting, filtering, joins, and aggregations.
     \item Neo4j is more natural for graph-shaped questions involving paths and relationships.
     \item The result depends on query type and dataset size.
+\end{itemize}
+
+\subsection{How to Explain the Result Without Overclaiming}
+
+The correct conclusion is balanced:
+
+\begin{quote}
+PostgreSQL performed better for most structured analytical queries in our benchmark.
+Neo4j was clearer and, in one case, faster for a relationship-heavy author citation network query.
+Therefore, the best DBMS depends on the shape of the data and the question being asked.
+\end{quote}
+
+Do not say:
+
+\begin{quote}
+PostgreSQL is always better.
+\end{quote}
+
+That would be too strong and scientifically incorrect.
+The project shows a specific comparison under specific conditions.
+
+\subsection{Why PostgreSQL Wins Many Queries Here}
+
+Many benchmark queries are classic tabular analytics:
+
+\begin{itemize}
+    \item sort papers by citation count;
+    \item group papers by author;
+    \item group papers by topic;
+    \item filter papers by title or abstract text;
+    \item join normalized tables and aggregate counts.
+\end{itemize}
+
+PostgreSQL is highly optimized for this type of workload.
+It has mature query planning, efficient joins, indexes, sorting, and aggregation operators.
+Our dataset is also small enough that PostgreSQL can process many queries very quickly.
+
+\subsection{Why Neo4j Still Matters}
+
+Neo4j is not included only for speed.
+It also matters because of expressiveness and model fit.
+
+For graph-shaped questions, the Cypher query often looks like the real-world question.
+For example:
+
+\begin{verbatim}
+Author -> Paper -> Cited Paper -> Author
+\end{verbatim}
+
+This is easier to explain visually and conceptually than several SQL joins.
+In the author citation network query, Neo4j was also faster in our benchmark.
+
+\subsection{What the Professor May Care About}
+
+The professor may care less about the absolute milliseconds and more about whether we understand the comparison.
+The important points are:
+
+\begin{itemize}
+    \item we used the same input data for both databases;
+    \item we modeled the same real-world entities in two different ways;
+    \item we validated matching counts before benchmarking;
+    \item we wrote equivalent queries;
+    \item we interpreted results with limitations, not exaggerated claims;
+    \item we connected the implementation to course topics.
 \end{itemize}
 
 \section{Step 11: Visual Evidence}
@@ -560,6 +1048,69 @@ He should understand these core points:
 This project is useful because it connects directly to topics from the course.
 We should mention these connections during the presentation because they show that the project is not only a programming exercise.
 
+\subsection{Lecture Concepts Explained Without the Slides}
+
+\textbf{Graph databases.}
+The graph database lecture explains that some data is naturally represented as a network.
+In a network, the connections are first-class information.
+Our project uses this idea because OpenAlex papers are connected to authors, topics, and other papers.
+
+\textbf{Neo4j property graph.}
+Neo4j uses the property graph model.
+This means nodes and relationships can both have properties.
+For our project:
+
+\begin{itemize}
+    \item \texttt{Paper} nodes have title, year, DOI, citation count, abstract, and topic properties;
+    \item \texttt{Author} nodes have author ID and display name;
+    \item \texttt{Topic} nodes have topic ID and display name;
+    \item \texttt{AUTHORED} relationships can store author position and corresponding-author information;
+    \item \texttt{HAS\_TOPIC} relationships can store topic score and source;
+    \item \texttt{CITES} relationships connect one paper to another.
+\end{itemize}
+
+\textbf{Cypher pattern matching.}
+Cypher queries use patterns.
+A pattern visually resembles the graph itself.
+For example:
+
+\begin{verbatim}
+MATCH (a:Author)-[:AUTHORED]->(p:Paper)
+RETURN a.display_name, p.title
+\end{verbatim}
+
+This reads almost like:
+
+\begin{quote}
+Find authors connected by an AUTHORED relationship to papers.
+\end{quote}
+
+\textbf{Relational joins.}
+In relational databases, relationships are represented by values in tables.
+To answer relationship questions, SQL joins tables using matching IDs.
+For example, joining \texttt{paper\_authors} with \texttt{authors} gives the names of authors for each paper.
+
+\textbf{Query processing.}
+The query processing lectures explain that a DBMS translates a query into an execution plan.
+The execution plan may contain operators such as scan, selection, projection, join, grouping, sorting, and aggregation.
+Our benchmark connects to this because PostgreSQL uses \texttt{EXPLAIN ANALYZE} and Neo4j uses \texttt{PROFILE}.
+
+\textbf{File organization and indexes.}
+The file organization material explains that data access is not free.
+The DBMS needs a way to find data efficiently.
+Indexes help by creating faster access paths.
+That is why our PostgreSQL schema defines indexes and our Neo4j schema defines uniqueness constraints.
+
+\textbf{RDF databases.}
+RDF stores data as triples: subject, predicate, object.
+It is useful for semantic web, ontologies, and linked data.
+We did not use RDF because our approved comparison is PostgreSQL versus Neo4j property graphs.
+
+\textbf{Data warehousing.}
+Data warehousing focuses on analytical schemas such as fact tables, dimension tables, star schemas, and OLAP.
+We did not build a warehouse because our project is a DBMS comparison, not a dimensional modeling project.
+This is important if the professor asks why there is no star schema.
+
 \begin{table}[H]
 \centering
 \small
@@ -595,13 +1146,17 @@ The course explains that relational databases represent relationships through jo
 
 \section{Possible Professor Questions and Short Answers}
 
-\begin{table}[H]
-\centering
 \small
-\begin{tabular}{|p{0.40\textwidth}|p{0.48\textwidth}|}
+\begin{longtable}{|p{0.40\textwidth}|p{0.48\textwidth}|}
+\caption{Possible questions and short answers}\\
 \hline
 \textbf{Question} & \textbf{Answer} \\
 \hline
+\endfirsthead
+\hline
+\textbf{Question} & \textbf{Answer} \\
+\hline
+\endhead
 Why OpenAlex? & It is open, has an API, and contains papers, authors, topics, and citations. \\
 \hline
 Why not use the full dataset? & Full OpenAlex is too large, so we used a focused AI/RAG subset suitable for local testing. \\
@@ -614,9 +1169,164 @@ Why use Neo4j then? & Neo4j is clearer for graph-shaped questions, paths, and ne
 \hline
 What is the main conclusion? & PostgreSQL is strong for structured analysis; Neo4j is strong for relationship-heavy traversal. \\
 \hline
+What is ETL? & Extract data from OpenAlex, transform it into clean CSV files, then load it into PostgreSQL and Neo4j. \\
+\hline
+Why use the same CSV files for both databases? & To make the comparison fair. The input data is the same, only the database model changes. \\
+\hline
+What is a bridge table? & A relational table used to represent many-to-many relationships, such as papers connected to many authors and authors connected to many papers. \\
+\hline
+What is a graph traversal? & Following relationships from node to node, for example Author to Paper to Cited Paper to Author. \\
+\hline
+Why not RDF? & RDF is based on triples and semantic vocabularies. Our approved project compares PostgreSQL with Neo4j property graphs, not semantic web databases. \\
+\hline
+Why not data warehousing? & Data warehousing would require fact tables, dimensions, and OLAP sessions. Our project is a DBMS comparison, not a warehouse design. \\
+\hline
+What does EXPLAIN ANALYZE do? & It runs a PostgreSQL query and reports the execution plan and measured execution time. \\
+\hline
+What does Neo4j PROFILE do? & It runs a Cypher query and shows the graph query plan and execution details. \\
+\hline
+What is the biggest limitation? & The dataset is small and local, so results should not be generalized to every dataset or production environment. \\
+\hline
+\end{longtable}
+\normalsize
+
+\section{What We Should Do Now}
+
+The project implementation is complete enough to present.
+The next work is not to redesign the project from zero.
+The next work is to prepare the explanation and make sure both group members can defend the choices.
+
+\subsection{Immediate Checklist}
+
+\begin{enumerate}
+    \item Pull the latest GitHub version so both group members have the same files.
+    \item Open \texttt{docs/project\_report.pdf} and read the introduction, methodology, results, and conclusion.
+    \item Open \texttt{docs/OpenAlex\_DBMS\_Comparison\_Sapienza.pptx} and rehearse the slide story.
+    \item Keep \texttt{docs/leo\_step\_by\_step\_walkthrough.pdf} as the explanation document for Leo.
+    \item Do not change benchmark numbers unless we rerun the benchmark and update the report, charts, and slides together.
+    \item Do not depend on live internet during the presentation; use screenshots and local files.
+    \item If doing a live demo, start Docker before the presentation and verify both Adminer and Neo4j Browser open correctly.
+\end{enumerate}
+
+\subsection{What Leo Should Focus on Learning}
+
+Leo should focus on these five ideas:
+
+\begin{enumerate}
+    \item \textbf{Dataset story}: OpenAlex gives papers, authors, topics, and citations.
+    \item \textbf{ETL story}: raw API data was cleaned and normalized into CSV files.
+    \item \textbf{Modeling story}: PostgreSQL uses tables and joins; Neo4j uses nodes and relationships.
+    \item \textbf{Benchmark story}: we used equivalent SQL/Cypher queries and measured average execution time.
+    \item \textbf{Conclusion story}: PostgreSQL was better for most structured tabular queries in our benchmark; Neo4j was more natural for graph traversal and faster for the author citation network query.
+\end{enumerate}
+
+\subsection{Suggested Presentation Split}
+
+A simple split between Hamza and Leo could be:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{0.20\textwidth}|p{0.18\textwidth}|p{0.50\textwidth}|}
+\hline
+\textbf{Slides} & \textbf{Speaker} & \textbf{Main responsibility} \\
+\hline
+1--6 & Hamza & Introduce the project, dataset, pipeline, ETL, and normalized dataset. \\
+\hline
+7--13 & Leo & Explain PostgreSQL model, Neo4j model, screenshots, and equivalent query example. \\
+\hline
+14--18 & Hamza + Leo & Explain benchmark method, results, interpretation, limitations, and final conclusion. \\
+\hline
+19--21 & Leo if asked & Use appendix slides to connect the project to course concepts. \\
+\hline
 \end{tabular}
-\caption{Possible questions and short answers}
+\caption{Possible presentation split}
 \end{table}
+
+This split is only a suggestion.
+The important thing is that both members can answer general questions.
+
+\subsection{Slide-by-Slide Speaking Notes}
+
+\begin{longtable}{|p{0.07\textwidth}|p{0.26\textwidth}|p{0.57\textwidth}|}
+\hline
+\textbf{Slide} & \textbf{Title} & \textbf{What to say} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Slide} & \textbf{Title} & \textbf{What to say} \\
+\hline
+\endhead
+1 & Comparison between PostgreSQL and Neo4j & Introduce the topic: same OpenAlex dataset, two DBMSs, one comparison. \\
+\hline
+2 & Project Goal & Explain the main question: which model is more suitable for AI research paper data, relational or graph? \\
+\hline
+3 & Dataset Source: OpenAlex & OpenAlex is an open scholarly dataset with works, authors, topics, and citation references. \\
+\hline
+4 & Pipeline Followed & Show the full process from API to benchmarks. This proves the project is linear and reproducible. \\
+\hline
+5 & ETL Process & Explain extract, transform, load. Mention nested JSON, abstract reconstruction, deduplication, and internal citations. \\
+\hline
+6 & Normalized Dataset & Explain the final dataset counts. These counts show what was loaded into both DBMSs. \\
+\hline
+7 & PostgreSQL Relational Model & Explain tables, primary keys, bridge tables, joins, and indexes. \\
+\hline
+8 & Neo4j Graph Model & Explain nodes, labels, properties, relationships, and graph traversal. \\
+\hline
+9 & Implementation Setup & Docker runs PostgreSQL, Neo4j, and Adminer locally. This makes the project reproducible. \\
+\hline
+10 & PostgreSQL Evidence & Adminer screenshot proves PostgreSQL tables were loaded and can be inspected. \\
+\hline
+11 & Neo4j Evidence: Author-Paper-Topic & Neo4j screenshot proves graph nodes and relationships were loaded. \\
+\hline
+12 & Neo4j Evidence: Citation Network & Show why graph visualization is useful for citation relationships. \\
+\hline
+13 & Equivalent Query Example & Explain that SQL and Cypher answer the same question using different models. \\
+\hline
+14 & Benchmark Methodology & Explain warmups, measured runs, averages, \texttt{EXPLAIN ANALYZE}, and \texttt{PROFILE}. \\
+\hline
+15 & Benchmark Results & State the main result: PostgreSQL faster on 10/11; Neo4j faster on author citation network. \\
+\hline
+16 & Interpretation & Explain why: PostgreSQL fits tabular aggregation; Neo4j fits relationship traversal. \\
+\hline
+17 & Limitations and Future Work & Mention small dataset, local environment, and future improvements such as larger data or deeper traversal. \\
+\hline
+18 & Final Conclusions & Give the balanced final answer: database choice depends on data shape and query pattern. \\
+\hline
+19 & Course Connection: Graph Databases & Use this if the professor asks about lecture relevance. Explain relationships as edges. \\
+\hline
+20 & Course Connection: Joins vs Traversal & Explain that PostgreSQL reconstructs relationships through joins while Neo4j traverses stored edges. \\
+\hline
+21 & Course Connection: Scope Choices & Explain why we did not present this as RDF or data warehousing. It is a DBMS comparison. \\
+\hline
+\end{longtable}
+
+\subsection{What Not to Do at the Last Minute}
+
+\begin{itemize}
+    \item Do not regenerate the dataset with different parameters unless we are ready to reload both databases and rerun benchmarks.
+    \item Do not change only one database model; both models must stay logically equivalent.
+    \item Do not add new benchmark claims without measured results.
+    \item Do not present Neo4j as universally faster or PostgreSQL as universally better.
+    \item Do not rely on live Docker screenshots if Docker is not already running.
+\end{itemize}
+
+\subsection{If the Professor Asks ``What Did Leo Do?''}
+
+Leo can answer in terms of understanding and presentation ownership:
+
+\begin{quote}
+I focused on understanding the database comparison, especially the relational model versus the graph model, the equivalent SQL/Cypher queries, and how the benchmark results should be interpreted. I can explain why the same OpenAlex dataset is represented with bridge tables in PostgreSQL and with nodes and relationships in Neo4j.
+\end{quote}
+
+If Leo wants to be more technical, he can mention:
+
+\begin{itemize}
+    \item checking the Neo4j graph model and screenshots;
+    \item understanding the author-paper-topic and citation network examples;
+    \item explaining equivalent SQL and Cypher queries;
+    \item explaining the final benchmark interpretation.
+\end{itemize}
 
 \section{Commands to Reproduce the Project}
 
