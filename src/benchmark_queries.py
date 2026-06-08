@@ -181,6 +181,7 @@ def build_markdown(
     results: list[BenchmarkResult],
     runs: int,
     warmups: int,
+    include_chart_links: bool,
 ) -> None:
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     grouped: dict[tuple[str, str], list[BenchmarkResult]] = {}
@@ -202,13 +203,24 @@ def build_markdown(
         "",
         "## Summary",
         "",
-        "![Average query execution time](figures/benchmark_average_times.svg)",
-        "",
-        "![Relative query time](figures/benchmark_relative_time.svg)",
-        "",
-        "| Query | PostgreSQL avg ms | Neo4j avg ms | Faster system | Notes |",
-        "|---|---:|---:|---|---|",
     ]
+
+    if include_chart_links:
+        lines.extend(
+            [
+                "![Average query execution time](figures/benchmark_average_times.svg)",
+                "",
+                "![Relative query time](figures/benchmark_relative_time.svg)",
+                "",
+            ]
+        )
+
+    lines.extend(
+        [
+            "| Query | PostgreSQL avg ms | Neo4j avg ms | Faster system | Notes |",
+            "|---|---:|---:|---|---|",
+        ]
+    )
 
     for query in queries:
         postgres_values = [result.elapsed_ms for result in grouped[(query.id, "PostgreSQL")]]
@@ -228,6 +240,42 @@ def build_markdown(
             f"{neo4j_summary['avg_ms']:.3f} | "
             f"{faster} | "
             f"{query.description} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Execution Diagnostics",
+            "",
+            "| Query | PostgreSQL avg planning ms | Neo4j database accesses | Operator-level note |",
+            "|---|---:|---:|---|",
+        ]
+    )
+
+    for query in queries:
+        postgres_results = grouped[(query.id, "PostgreSQL")]
+        neo4j_results = grouped[(query.id, "Neo4j")]
+        planning_values = [
+            result.planning_ms
+            for result in postgres_results
+            if result.planning_ms is not None
+        ]
+        db_hits_values = [
+            result.db_hits
+            for result in neo4j_results
+            if result.db_hits is not None
+        ]
+        avg_planning = statistics.fmean(planning_values) if planning_values else 0.0
+        avg_db_hits = statistics.fmean(db_hits_values) if db_hits_values else 0.0
+        note = (
+            "Low-level metric used to interpret access cost; runtime still depends on query shape, caching, and result size."
+        )
+        lines.append(
+            "| "
+            f"{query.name} | "
+            f"{avg_planning:.3f} | "
+            f"{avg_db_hits:.0f} | "
+            f"{note} |"
         )
 
     lines.extend(
@@ -277,6 +325,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout", type=int, default=120)
     parser.add_argument("--output-csv", default="benchmarks/results/benchmark_results.csv")
     parser.add_argument("--output-md", default="docs/benchmark_results.md")
+    parser.add_argument(
+        "--skip-chart-links",
+        action="store_true",
+        help="Do not embed chart image links in the generated Markdown summary.",
+    )
     return parser.parse_args()
 
 
@@ -329,6 +382,7 @@ def main() -> None:
         results=results,
         runs=args.runs,
         warmups=args.warmups,
+        include_chart_links=not args.skip_chart_links,
     )
 
     print(f"Wrote raw benchmark results to {args.output_csv}")

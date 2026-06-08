@@ -228,6 +228,8 @@ Benchmark result summary:
 - 11 paired SQL/Cypher queries were benchmarked.
 - PostgreSQL was faster on 10 of 11 queries.
 - Neo4j was faster on the author citation network query.
+- A supplemental graph-focused workload is included in `benchmarks/graph_focused_queries.json`.
+- In that supplemental workload, Neo4j wins 2 additional network-style queries: two-hop author citation network and author citation with shared paper topic.
 
 ## Repository Structure
 
@@ -247,6 +249,7 @@ docs/                   Proposal, roadmap, report, benchmark notes, and figures
 - [Project roadmap](docs/project_roadmap.pdf)
 - [Project report PDF](docs/project_report.pdf)
 - [Benchmark results](docs/benchmark_results.md)
+- [Supplemental graph-focused benchmark results](docs/graph_focused_benchmark_results.md)
 - [Benchmark average-time chart](docs/figures/benchmark_average_times.svg)
 - [Benchmark relative-time chart](docs/figures/benchmark_relative_time.svg)
 

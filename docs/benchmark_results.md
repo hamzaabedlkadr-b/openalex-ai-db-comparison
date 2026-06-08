@@ -57,8 +57,28 @@ Generated at: 2026-05-14 21:22:23
 | Author citation network | PostgreSQL | 48.214 | 47.688 | 44.803 | 52.426 |
 | Author citation network | Neo4j | 37.400 | 36.000 | 35.000 | 40.000 |
 
+## Execution Diagnostics
+
+| Query | PostgreSQL avg planning ms | Neo4j database accesses | Operator-level note |
+|---|---:|---:|---|
+| Most cited papers | 0.468 | 629 | Ranking query; PostgreSQL handles sort/limit cheaply on the small table. |
+| Authors with the most papers | 0.758 | 13822 | Join plus grouping; Neo4j expands author-paper relationships before aggregation. |
+| Most frequent topics | 1.317 | 20221 | Join plus grouping over paper-topic relationships. |
+| Author collaboration pairs | 1.615 | 64054 | Self-join/pattern expansion over shared papers. |
+| Citation links inside the subset | 1.155 | 134 | Simple relationship lookup; PostgreSQL is extremely fast on the small citation table. |
+| RAG-related papers | 0.587 | 918 | Text filter over title/abstract; no full-text/vector index was added. |
+| Two-hop citation paths | 1.835 | 19008 | Two-step citation traversal; PostgreSQL still wins on this small citation graph. |
+| Authors connected through shared topics | 25.594 | 1845747 | Large expansion over author/topic combinations; expensive in both systems. |
+| Papers sharing cited references | 1.777 | 21815 | Self-join/pattern over shared citation targets. |
+| Citation paths up to three hops | 1.054 | 4830 | Recursive/path-like query; Neo4j traversal is expressive but not faster here. |
+| Author citation network | 3.345 | 40740 | Natural author-paper-citation-author path; Neo4j is faster in this measured query. |
+
 ## Interpretation Notes
 
 These results should be interpreted as a local project benchmark, not as a universal ranking of PostgreSQL and Neo4j.
 The dataset is intentionally small, and query performance depends on data size, indexing, cache state, query shape, and hardware.
 The most useful project conclusion is not only which system is faster, but also which query is simpler and more natural to express.
+
+A supplemental graph-focused workload is available in `docs/graph_focused_benchmark_results.md`.
+That extra workload keeps the original benchmark unchanged, but adds graph-shaped queries involving anchored neighborhoods, two-hop author citation paths, and citation relationships constrained by shared topics.
+In the supplemental workload, Neo4j wins two additional network-style queries.

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "g1_anchored_author_citation_neighborhood",
+    "name": "Anchored author citation neighborhood",
+    "description": "Starting from one author, find other authors reached through citations from that author's papers.",
+    "postgres": "SELECT target_author.author_id AS cited_author_id, target_author.display_name AS cited_author, COUNT(*) AS citation_edges FROM authors source_author JOIN paper_authors source_pa ON source_pa.author_id = source_author.author_id JOIN citations c ON c.citing_paper_id = source_pa.paper_id JOIN paper_authors target_pa ON target_pa.paper_id = c.cited_paper_id JOIN authors target_author ON target_author.author_id = target_pa.author_id WHERE source_author.author_id = 'A5017326471' AND target_author.author_id <> source_author.author_id GROUP BY target_author.author_id, target_author.display_name ORDER BY citation_edges DESC, cited_author LIMIT 10",
+    "neo4j": "MATCH (source:Author {author_id: 'A5017326471'})-[:AUTHORED]->(:Paper)-[:CITES]->(:Paper)<-[:AUTHORED]-(target:Author) WHERE target.author_id <> source.author_id RETURN target.author_id AS cited_author_id, target.display_name AS cited_author, count(*) AS citation_edges ORDER BY citation_edges DESC, cited_author LIMIT 10"
+  },
+  {
+    "id": "g2_paper_citation_neighborhood_1_to_2_hops",
+    "name": "Paper citation neighborhood within two hops",
+    "description": "Starting from one paper, find papers reachable through one or two citation hops.",
+    "postgres": "WITH RECURSIVE paths AS (SELECT c.cited_paper_id AS target_id, c.cited_paper_id AS current_id, 1 AS depth, ARRAY[c.citing_paper_id, c.cited_paper_id] AS visited FROM citations c WHERE c.citing_paper_id = 'W4411403346' UNION ALL SELECT c.cited_paper_id AS target_id, c.cited_paper_id AS current_id, paths.depth + 1 AS depth, paths.visited || c.cited_paper_id FROM paths JOIN citations c ON c.citing_paper_id = paths.current_id WHERE paths.depth < 2 AND NOT c.cited_paper_id = ANY(paths.visited)) SELECT target.paper_id, target.title, MIN(paths.depth) AS distance, COUNT(*) AS paths FROM paths JOIN papers target ON target.paper_id = paths.target_id GROUP BY target.paper_id, target.title ORDER BY distance, paths DESC, target.title LIMIT 20",
+    "neo4j": "MATCH path = (:Paper {paper_id: 'W4411403346'})-[:CITES*1..2]->(target:Paper) WITH target, min(length(path)) AS distance, count(path) AS paths RETURN target.paper_id AS paper_id, target.title AS title, distance, paths ORDER BY distance, paths DESC, title LIMIT 20"
+  },
+  {
+    "id": "g3_paper_context_subgraph",
+    "name": "Paper context subgraph",
+    "description": "Starting from one paper, retrieve its authors, topics, cited papers, and citing papers as a local context graph.",
+    "postgres": "SELECT entity_type, entity_id, display_name FROM (SELECT 'author' AS entity_type, a.author_id AS entity_id, a.display_name AS display_name FROM paper_authors pa JOIN authors a ON a.author_id = pa.author_id WHERE pa.paper_id = 'W4411403346' UNION ALL SELECT 'topic' AS entity_type, t.topic_id AS entity_id, t.display_name AS display_name FROM paper_topics pt JOIN topics t ON t.topic_id = pt.topic_id WHERE pt.paper_id = 'W4411403346' UNION ALL SELECT 'cited_paper' AS entity_type, p.paper_id AS entity_id, p.title AS display_name FROM citations c JOIN papers p ON p.paper_id = c.cited_paper_id WHERE c.citing_paper_id = 'W4411403346' UNION ALL SELECT 'citing_paper' AS entity_type, p.paper_id AS entity_id, p.title AS display_name FROM citations c JOIN papers p ON p.paper_id = c.citing_paper_id WHERE c.cited_paper_id = 'W4411403346') context ORDER BY entity_type, display_name LIMIT 50",
+    "neo4j": "MATCH (center:Paper {paper_id: 'W4411403346'}) CALL { WITH center MATCH (a:Author)-[:AUTHORED]->(center) RETURN 'author' AS entity_type, a.author_id AS entity_id, a.display_name AS display_name UNION ALL WITH center MATCH (center)-[:HAS_TOPIC]->(t:Topic) RETURN 'topic' AS entity_type, t.topic_id AS entity_id, t.display_name AS display_name UNION ALL WITH center MATCH (center)-[:CITES]->(cited:Paper) RETURN 'cited_paper' AS entity_type, cited.paper_id AS entity_id, cited.title AS display_name UNION ALL WITH center MATCH (citing:Paper)-[:CITES]->(center) RETURN 'citing_paper' AS entity_type, citing.paper_id AS entity_id, citing.title AS display_name } RETURN entity_type, entity_id, display_name ORDER BY entity_type, display_name LIMIT 50"
+  },
+  {
+    "id": "g4_topic_to_author_neighborhood",
+    "name": "Topic-to-author neighborhood",
+    "description": "Starting from one topic, find authors connected to that topic through papers.",
+    "postgres": "SELECT a.author_id, a.display_name AS author, COUNT(DISTINCT p.paper_id) AS papers FROM topics t JOIN paper_topics pt ON pt.topic_id = t.topic_id JOIN papers p ON p.paper_id = pt.paper_id JOIN paper_authors pa ON pa.paper_id = p.paper_id JOIN authors a ON a.author_id = pa.author_id WHERE t.topic_id = 'T11287' GROUP BY a.author_id, a.display_name ORDER BY papers DESC, author LIMIT 20",
+    "neo4j": "MATCH (:Topic {topic_id: 'T11287'})<-[:HAS_TOPIC]-(p:Paper)<-[:AUTHORED]-(a:Author) RETURN a.author_id AS author_id, a.display_name AS author, count(DISTINCT p) AS papers ORDER BY papers DESC, author LIMIT 20"
+  },
+  {
+    "id": "g5_topic_filtered_author_citation_network",
+    "name": "Topic-filtered author citation network",
+    "description": "Find author citation relationships where the citing paper belongs to a selected topic.",
+    "postgres": "SELECT source_author.display_name AS citing_author, target_author.display_name AS cited_author, COUNT(*) AS citation_edges FROM topics t JOIN paper_topics source_topic ON source_topic.topic_id = t.topic_id JOIN paper_authors source_pa ON source_pa.paper_id = source_topic.paper_id JOIN authors source_author ON source_author.author_id = source_pa.author_id JOIN citations c ON c.citing_paper_id = source_topic.paper_id JOIN paper_authors target_pa ON target_pa.paper_id = c.cited_paper_id JOIN authors target_author ON target_author.author_id = target_pa.author_id WHERE t.topic_id = 'T11287' AND source_author.author_id <> target_author.author_id GROUP BY source_author.author_id, source_author.display_name, target_author.author_id, target_author.display_name ORDER BY citation_edges DESC, citing_author, cited_author LIMIT 20",
+    "neo4j": "MATCH (:Topic {topic_id: 'T11287'})<-[:HAS_TOPIC]-(source_paper:Paper)<-[:AUTHORED]-(source:Author) MATCH (source_paper)-[:CITES]->(:Paper)<-[:AUTHORED]-(target:Author) WHERE source.author_id <> target.author_id RETURN source.display_name AS citing_author, target.display_name AS cited_author, count(*) AS citation_edges ORDER BY citation_edges DESC, citing_author, cited_author LIMIT 20"
+  },
+  {
+    "id": "g6_two_hop_author_citation_network",
+    "name": "Two-hop author citation network",
+    "description": "Find authors connected through two consecutive paper citation hops.",
+    "postgres": "SELECT source_author.display_name AS source_author, target_author.display_name AS target_author, COUNT(*) AS two_hop_paths FROM paper_authors source_pa JOIN citations c1 ON c1.citing_paper_id = source_pa.paper_id JOIN citations c2 ON c2.citing_paper_id = c1.cited_paper_id JOIN paper_authors target_pa ON target_pa.paper_id = c2.cited_paper_id JOIN authors source_author ON source_author.author_id = source_pa.author_id JOIN authors target_author ON target_author.author_id = target_pa.author_id WHERE source_author.author_id <> target_author.author_id GROUP BY source_author.author_id, source_author.display_name, target_author.author_id, target_author.display_name ORDER BY two_hop_paths DESC, source_author, target_author LIMIT 20",
+    "neo4j": "MATCH (source:Author)-[:AUTHORED]->(:Paper)-[:CITES]->(:Paper)-[:CITES]->(:Paper)<-[:AUTHORED]-(target:Author) WHERE source.author_id <> target.author_id RETURN source.display_name AS source_author, target.display_name AS target_author, count(*) AS two_hop_paths ORDER BY two_hop_paths DESC, source_author, target_author LIMIT 20"
+  },
+  {
+    "id": "g7_author_citation_with_shared_topic",
+    "name": "Author citation with shared paper topic",
+    "description": "Find author citation relationships where the citing and cited papers share at least one OpenAlex topic.",
+    "postgres": "SELECT source_author.display_name AS citing_author, target_author.display_name AS cited_author, t.display_name AS shared_topic, COUNT(*) AS paths FROM paper_authors source_pa JOIN citations c ON c.citing_paper_id = source_pa.paper_id JOIN paper_authors target_pa ON target_pa.paper_id = c.cited_paper_id JOIN paper_topics source_topic ON source_topic.paper_id = source_pa.paper_id JOIN paper_topics target_topic ON target_topic.paper_id = c.cited_paper_id AND target_topic.topic_id = source_topic.topic_id JOIN topics t ON t.topic_id = source_topic.topic_id JOIN authors source_author ON source_author.author_id = source_pa.author_id JOIN authors target_author ON target_author.author_id = target_pa.author_id WHERE source_author.author_id <> target_author.author_id GROUP BY source_author.author_id, source_author.display_name, target_author.author_id, target_author.display_name, t.topic_id, t.display_name ORDER BY paths DESC, citing_author, cited_author, shared_topic LIMIT 20",
+    "neo4j": "MATCH (source:Author)-[:AUTHORED]->(source_paper:Paper)-[:CITES]->(target_paper:Paper)<-[:AUTHORED]-(target:Author) MATCH (source_paper)-[:HAS_TOPIC]->(topic:Topic)<-[:HAS_TOPIC]-(target_paper) WHERE source.author_id <> target.author_id RETURN source.display_name AS citing_author, target.display_name AS cited_author, topic.display_name AS shared_topic, count(*) AS paths ORDER BY paths DESC, citing_author, cited_author, shared_topic LIMIT 20"
+  }
+]
