@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">OpenAlex DBMS comparison pipeline overview</title>
+  <desc id="desc">A professional pipeline diagram showing OpenAlex API to JSONL, CSV, PostgreSQL and Neo4j, queries, benchmarks, and conclusions.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="0.56" stop-color="#eef5f8"/>
+      <stop offset="1" stop-color="#f5f2e9"/>
+    </linearGradient>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0b2f44"/>
+      <stop offset="0.55" stop-color="#17485c"/>
+      <stop offset="1" stop-color="#1e605b"/>
+    </linearGradient>
+    <linearGradient id="api" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="file" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6ee7b7"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="analysis" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#db2777"/>
+    </linearGradient>
+    <filter id="softShadow" x="-15%" y="-20%" width="130%" height="145%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+    <marker id="arrow" markerWidth="18" markerHeight="18" refX="14" refY="9" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L16,9 L2,16 Z" fill="#24495b"/>
+    </marker>
+    <style>
+      .title { font: 700 58px Arial, Helvetica, sans-serif; fill: #ffffff; }
+      .subtitle { font: 400 25px Arial, Helvetica, sans-serif; fill: #d9f3f0; }
+      .lane { font: 700 21px Arial, Helvetica, sans-serif; letter-spacing: 1.8px; fill: #45606c; }
+      .stepTitle { font: 700 27px Arial, Helvetica, sans-serif; fill: #102a3a; }
+      .stepText { font: 400 19px Arial, Helvetica, sans-serif; fill: #415766; }
+      .small { font: 700 16px Arial, Helvetica, sans-serif; fill: #647985; letter-spacing: 0.9px; }
+      .badgeText { font: 700 17px Arial, Helvetica, sans-serif; fill: #ffffff; letter-spacing: 0.6px; }
+      .card { fill: #ffffff; stroke: #d4e2e7; stroke-width: 2; rx: 20; filter: url(#softShadow); }
+      .connector { fill: none; stroke: #24495b; stroke-width: 5; stroke-linecap: round; marker-end: url(#arrow); }
+      .splitConnector { fill: none; stroke: #24495b; stroke-width: 4.4; stroke-linecap: round; marker-end: url(#arrow); }
+      .thinLine { stroke: #d2e1e6; stroke-width: 2; }
+      .iconStroke { fill: none; stroke: #ffffff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      .iconFill { fill: #ffffff; opacity: 0.95; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+
+  <rect x="0" y="0" width="1920" height="185" fill="url(#header)"/>
+  <text x="110" y="83" class="title">Pipeline Overview</text>
+  <text x="112" y="130" class="subtitle">From OpenAlex API data to two database models, equivalent queries, benchmark evidence, and final conclusions</text>
+
+  <g opacity="0.16">
+    <circle cx="1705" cy="67" r="60" fill="#9ad7d3"/>
+    <circle cx="1772" cy="113" r="34" fill="#f6bd60"/>
+    <circle cx="1833" cy="51" r="25" fill="#ffffff"/>
+    <path d="M1671 81 C1728 135, 1770 3, 1835 77" fill="none" stroke="#ffffff" stroke-width="5"/>
+  </g>
+
+  <text x="110" y="242" class="lane">SOURCE</text>
+  <text x="423" y="242" class="lane">ETL OUTPUT</text>
+  <text x="735" y="242" class="lane">DATABASE MODELS</text>
+  <text x="1136" y="242" class="lane">ANALYSIS</text>
+  <text x="1501" y="242" class="lane">PROJECT RESULT</text>
+  <line x1="105" y1="265" x2="1815" y2="265" class="thinLine"/>
+
+  <g transform="translate(95 330)">
+    <rect class="card" width="245" height="250"/>
+    <circle cx="72" cy="65" r="40" fill="url(#api)"/>
+    <path class="iconStroke" d="M52 66 h40 M72 46 v40"/>
+    <path class="iconStroke" d="M46 78 c18 24 52 24 70 0"/>
+    <text x="34" y="138" class="stepTitle">OpenAlex API</text>
+    <text x="34" y="174" class="stepText">AI, ML, LLM, and</text>
+    <text x="34" y="200" class="stepText">RAG-related works</text>
+    <rect x="34" y="216" width="105" height="28" rx="14" fill="#0f766e"/>
+    <text x="51" y="236" class="badgeText">SOURCE</text>
+  </g>
+
+  <path class="connector" d="M360 455 H438"/>
+
+  <g transform="translate(455 330)">
+    <rect class="card" width="245" height="250"/>
+    <rect x="46" y="35" width="72" height="90" rx="10" fill="url(#file)"/>
+    <path d="M99 35 L118 55 H99 Z" fill="#fff2d5"/>
+    <rect x="130" y="55" width="68" height="84" rx="10" fill="#fff7ed" stroke="#f97316" stroke-width="5"/>
+    <line x1="61" y1="69" x2="101" y2="69" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="61" y1="91" x2="96" y2="91" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="145" y1="84" x2="184" y2="84" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+    <line x1="145" y1="106" x2="178" y2="106" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+    <text x="34" y="166" class="stepTitle">Raw JSONL</text>
+    <text x="34" y="202" class="stepText">Cursor pagination</text>
+    <text x="34" y="228" class="stepText">preserves API records</text>
+  </g>
+
+  <path class="connector" d="M720 455 H798"/>
+
+  <g transform="translate(815 330)">
+    <rect class="card" width="245" height="250"/>
+    <rect x="45" y="43" width="156" height="98" rx="12" fill="#f8fafc" stroke="#12a594" stroke-width="5"/>
+    <line x1="45" y1="75" x2="201" y2="75" stroke="#12a594" stroke-width="5"/>
+    <line x1="97" y1="43" x2="97" y2="141" stroke="#12a594" stroke-width="5"/>
+    <line x1="149" y1="43" x2="149" y2="141" stroke="#12a594" stroke-width="5"/>
+    <line x1="45" y1="108" x2="201" y2="108" stroke="#12a594" stroke-width="5"/>
+    <text x="34" y="166" class="stepTitle">Clean CSV Files</text>
+    <text x="34" y="202" class="stepText">papers, authors, topics,</text>
+    <text x="34" y="228" class="stepText">citations, bridge tables</text>
+  </g>
+
+  <path class="connector" d="M1080 455 H1142"/>
+
+  <g transform="translate(1160 260)">
+    <rect class="card" width="285" height="182"/>
+    <ellipse cx="76" cy="52" rx="46" ry="18" fill="url(#db)"/>
+    <rect x="30" y="52" width="92" height="72" fill="#2d7bc8"/>
+    <ellipse cx="76" cy="124" rx="46" ry="18" fill="#2563eb"/>
+    <path d="M30 52 v72 M122 52 v72" stroke="#2563eb" stroke-width="2"/>
+    <text x="146" y="60" class="stepTitle">PostgreSQL 16</text>
+    <text x="146" y="96" class="stepText">Relational tables</text>
+    <text x="146" y="122" class="stepText">and SQL queries</text>
+  </g>
+
+  <g transform="translate(1160 505)">
+    <rect class="card" width="285" height="182"/>
+    <circle cx="62" cy="58" r="23" fill="#85e0e6"/>
+    <circle cx="118" cy="49" r="23" fill="#ff756b"/>
+    <circle cx="92" cy="113" r="23" fill="#ffc4d1"/>
+    <line x1="82" y1="55" x2="98" y2="52" stroke="#24495b" stroke-width="5"/>
+    <line x1="73" y1="78" x2="84" y2="94" stroke="#24495b" stroke-width="5"/>
+    <line x1="108" y1="71" x2="101" y2="91" stroke="#24495b" stroke-width="5"/>
+    <text x="146" y="60" class="stepTitle">Neo4j 5</text>
+    <text x="146" y="96" class="stepText">Graph nodes and</text>
+    <text x="146" y="122" class="stepText">relationships</text>
+  </g>
+
+  <path class="splitConnector" d="M1060 455 C1110 455, 1110 351, 1142 351"/>
+  <path class="splitConnector" d="M1060 455 C1110 455, 1110 596, 1142 596"/>
+
+  <path class="connector" d="M1465 473 H1538"/>
+
+  <g transform="translate(1555 330)">
+    <rect class="card" width="245" height="250"/>
+    <circle cx="72" cy="58" r="34" fill="url(#analysis)"/>
+    <path class="iconStroke" d="M55 64 l13 13 l24 -34"/>
+    <rect x="122" y="39" width="80" height="86" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="5"/>
+    <line x1="139" y1="65" x2="185" y2="65" stroke="#7c3aed" stroke-width="5" stroke-linecap="round"/>
+    <line x1="139" y1="88" x2="180" y2="88" stroke="#7c3aed" stroke-width="5" stroke-linecap="round"/>
+    <text x="34" y="166" class="stepTitle">Queries</text>
+    <text x="34" y="202" class="stepText">Equivalent SQL and</text>
+    <text x="34" y="228" class="stepText">Cypher workloads</text>
+  </g>
+
+  <path class="connector" d="M1678 590 V654"/>
+
+  <g transform="translate(1470 685)">
+    <rect class="card" width="420" height="250"/>
+    <rect x="44" y="54" width="58" height="116" rx="8" fill="#38bdf8"/>
+    <rect x="122" y="86" width="58" height="84" rx="8" fill="#f59e0b"/>
+    <rect x="200" y="35" width="58" height="135" rx="8" fill="#10b981"/>
+    <polyline points="45,188 285,188" fill="none" stroke="#24495b" stroke-width="5" stroke-linecap="round"/>
+    <polyline points="72,188 72,176" fill="none" stroke="#24495b" stroke-width="5" stroke-linecap="round"/>
+    <text x="305" y="72" class="stepTitle">Benchmarks</text>
+    <text x="305" y="108" class="stepText">5 measured runs</text>
+    <text x="305" y="134" class="stepText">after warmup</text>
+    <text x="44" y="220" class="small">timing results + charts</text>
+  </g>
+
+  <path class="connector" d="M1450 810 H1362"/>
+
+  <g transform="translate(1035 685)">
+    <rect class="card" width="295" height="250"/>
+    <circle cx="70" cy="68" r="38" fill="#0f766e"/>
+    <path class="iconStroke" d="M51 70 l15 15 l28 -38"/>
+    <text x="126" y="63" class="stepTitle">Conclusions</text>
+    <text x="34" y="125" class="stepText">PostgreSQL: tabular</text>
+    <text x="34" y="153" class="stepText">aggregations and joins</text>
+    <text x="34" y="193" class="stepText">Neo4j: graph traversal</text>
+    <text x="34" y="221" class="stepText">and relationship analysis</text>
+  </g>
+
+  <g transform="translate(110 860)">
+    <rect x="0" y="0" width="820" height="92" rx="20" fill="#ffffff" stroke="#d4e2e7" stroke-width="2"/>
+    <text x="28" y="37" class="small">KEY DESIGN CHOICE</text>
+    <text x="28" y="68" class="stepText">The same normalized CSV dataset is loaded into both systems, so the comparison focuses on model and query behavior, not different input data.</text>
+  </g>
+
+  <g transform="translate(120 688)">
+    <rect x="0" y="0" width="770" height="112" rx="18" fill="#e9f7f6" stroke="#b7dedb" stroke-width="2"/>
+    <text x="28" y="42" class="stepTitle">ETL responsibilities</text>
+    <text x="28" y="78" class="stepText">Normalize nested OpenAlex JSON, reconstruct abstracts, deduplicate entities, and keep only internal citation links.</text>
+  </g>
+</svg>

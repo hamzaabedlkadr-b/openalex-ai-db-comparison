@@ -7,6 +7,8 @@
 \usepackage{enumitem}
 \usepackage{titlesec}
 \usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.55em}
@@ -151,6 +153,10 @@ Citation relationships & 392 \\
 
 Generated data files are stored locally in \texttt{data/raw/} and \texttt{data/processed/}.
 They are ignored by git because they can be regenerated from the OpenAlex API.
+
+This dataset is suitable for a DBMS comparison because it contains both tabular attributes and graph-shaped relationships.
+For example, paper metadata such as title, year, DOI, and citation count fits naturally in relational columns, while authorship, topic assignment, and citations form connected paths.
+This makes it possible to compare not only execution time, but also modeling clarity.
 
 \section{Data Collection and Cleaning Pipeline}
 
@@ -339,8 +345,13 @@ PostgreSQL & \texttt{postgres:16} & \texttt{localhost:5432} \\
 \hline
 Neo4j & \texttt{neo4j:5} & \texttt{http://localhost:7474} \\
 \hline
+Adminer & \texttt{adminer:latest} & \texttt{http://localhost:8080} \\
+\hline
 \end{tabular}
 \end{table}
+
+Adminer is included only as a visual interface for PostgreSQL.
+It does not change the benchmark; it helps inspect tables and execute SQL queries during the demo.
 
 Start the databases:
 
@@ -388,6 +399,82 @@ Citations / CITES & 392 & 392 \\
 
 The counts match exactly, confirming that the benchmark compares the same logical data in both systems.
 
+\section{Visual Evidence and Demo Screenshots}
+
+This section documents the visual evidence used in the final presentation.
+The screenshots are not used as benchmark inputs; they show that the databases were actually loaded and inspected through their user interfaces.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/diagram.png}
+\caption{End-to-end project pipeline from OpenAlex API collection to benchmark conclusions}
+\label{fig:pipeline-screenshot}
+\end{figure}
+
+Figure~\ref{fig:pipeline-screenshot} summarizes the complete workflow.
+The same data is collected once from OpenAlex, normalized once into CSV files, and then loaded into both database systems.
+This is important because the comparison would not be fair if PostgreSQL and Neo4j were loaded from different datasets.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/docker1.png}
+\caption{Docker Compose services running locally}
+\label{fig:docker-running}
+\end{figure}
+
+Figure~\ref{fig:docker-running} shows the local Docker environment.
+The running services are PostgreSQL, Neo4j, and Adminer.
+This confirms that the demo environment can be started with a single Docker Compose command.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/postgres_adminer_tables.png}
+\caption{PostgreSQL tables visible in Adminer}
+\label{fig:postgres-adminer}
+\end{figure}
+
+Figure~\ref{fig:postgres-adminer} shows the PostgreSQL database through Adminer.
+The table list corresponds to the relational model: entity tables for papers, authors, and topics, plus bridge tables and citations.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/postgres_sql_query.png}
+\caption{Example SQL query result in PostgreSQL}
+\label{fig:postgres-query}
+\end{figure}
+
+Figure~\ref{fig:postgres-query} shows a SQL query executed against the loaded PostgreSQL database.
+This evidence connects the schema to an actual analytical query result.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/neoj42.png}
+\caption{Neo4j Browser overview with node labels and relationship types}
+\label{fig:neo4j-overview}
+\end{figure}
+
+Figure~\ref{fig:neo4j-overview} shows that Neo4j contains the expected node labels \texttt{Author}, \texttt{Paper}, and \texttt{Topic}, and the expected relationship types \texttt{AUTHORED}, \texttt{HAS\_TOPIC}, and \texttt{CITES}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/neoj43.png}
+\caption{Neo4j graph query for Author--Paper--Topic paths}
+\label{fig:neo4j-author-topic}
+\end{figure}
+
+Figure~\ref{fig:neo4j-author-topic} shows an example graph pattern where an author wrote a paper and the paper has topics.
+The query returns a path, so Neo4j Browser displays both nodes and relationships.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{figures/neo4j_citation_network.png}
+\caption{Neo4j graph query for paper citation relationships}
+\label{fig:neo4j-citations}
+\end{figure}
+
+Figure~\ref{fig:neo4j-citations} shows the \texttt{CITES} relationship between paper nodes.
+This is one of the clearest examples of why a graph model is useful for scholarly data: citation networks can be inspected as connected objects rather than only as rows of IDs.
+
 \section{Query Workload}
 
 The benchmark contains 11 paired SQL/Cypher queries.
@@ -427,6 +514,50 @@ Q10 & Citation paths up to three hops & Find paper pairs connected by citation p
 Q11 & Author citation network & Find authors connected when one author's papers cite another author's papers. \\
 \hline
 \end{longtable}
+
+\section{Example of Equivalent SQL and Cypher}
+
+The benchmark pairs each analytical question with one SQL query and one Cypher query.
+The goal is not to make the queries textually identical, but to make them answer the same logical question over the same loaded data.
+
+One representative example is the author citation network query.
+The question is: \textit{which authors are connected because one author's paper cites another author's paper?}
+
+In Neo4j, the graph path is written directly:
+
+\begin{verbatim}
+MATCH (source:Author)-[:AUTHORED]->(:Paper)-[:CITES]->(:Paper)
+      <-[:AUTHORED]-(target:Author)
+WHERE source.author_id <> target.author_id
+RETURN source.display_name AS citing_author,
+       target.display_name AS cited_author,
+       count(*) AS citation_edges
+ORDER BY citation_edges DESC
+LIMIT 10;
+\end{verbatim}
+
+The equivalent SQL query follows the same logical path using joins:
+
+\begin{verbatim}
+SELECT
+    source_author.display_name AS citing_author,
+    target_author.display_name AS cited_author,
+    COUNT(*) AS citation_edges
+FROM paper_authors source_pa
+JOIN citations c ON c.citing_paper_id = source_pa.paper_id
+JOIN paper_authors target_pa ON target_pa.paper_id = c.cited_paper_id
+JOIN authors source_author ON source_author.author_id = source_pa.author_id
+JOIN authors target_author ON target_author.author_id = target_pa.author_id
+WHERE source_pa.author_id <> target_pa.author_id
+GROUP BY source_author.author_id, source_author.display_name,
+         target_author.author_id, target_author.display_name
+ORDER BY citation_edges DESC
+LIMIT 10;
+\end{verbatim}
+
+This example shows the main modeling difference.
+In Neo4j, the query is shaped like the relationship path.
+In PostgreSQL, the same path is reconstructed through relational joins.
 
 \section{Benchmark Methodology}
 
@@ -490,6 +621,40 @@ Author citation network & 48.214 & 37.400 & Neo4j \\
 \end{longtable}
 \normalsize
 \setlength{\tabcolsep}{6pt}
+
+\subsection{Result Summary}
+
+The benchmark has one clear numerical result: PostgreSQL is faster on 10 of the 11 benchmarked query pairs.
+The one exception is the author citation network query, where Neo4j is faster.
+
+\begin{table}[H]
+\centering
+\caption{Summary of benchmark wins}
+\label{tab:benchmark-wins}
+\begin{tabular}{|l|r|p{0.48\textwidth}|}
+\hline
+\textbf{System} & \textbf{Queries won} & \textbf{Main reason} \\
+\hline
+PostgreSQL & 10 & The current dataset is small and many queries are structured aggregations, joins, filters, and sorts. These operations match PostgreSQL's relational execution engine well. \\
+\hline
+Neo4j & 1 & The author citation network query follows a natural graph path from author to paper to cited paper to author. Cypher expresses this traversal directly. \\
+\hline
+\end{tabular}
+\end{table}
+
+This does not mean that PostgreSQL is always better than Neo4j.
+It means that, for this dataset size and this workload, many questions are closer to traditional analytical SQL than to deep graph traversal.
+Neo4j becomes more attractive when the question asks about paths, neighborhoods, influence, communities, or networks.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/benchmark_summary.png}
+\caption{Presentation benchmark chart generated from the measured result CSV}
+\label{fig:benchmark-summary-chart}
+\end{figure}
+
+Figure~\ref{fig:benchmark-summary-chart} is the simplified chart used in the final presentation.
+The chart is generated from the same benchmark CSV file as Table~\ref{tab:benchmark-results}.
 
 \section{Benchmark Graphs}
 
@@ -600,7 +765,23 @@ With larger graphs, deeper traversals, more complex path search, or additional g
     \item Add deeper citation path queries.
     \item Add more RAG-specific retrieval queries.
     \item Add visual graph exploration examples in Neo4j Browser.
-    \item Prepare the final presentation slides and live demo.
+    \item Add an application layer that uses the databases for a small RAG-style search demo.
+\end{itemize}
+
+\section{Final Deliverables}
+
+The project repository contains the following final deliverables:
+
+\begin{itemize}
+    \item \texttt{docs/project\_proposal.pdf}: approved project proposal;
+    \item \texttt{docs/project\_roadmap.pdf}: project roadmap;
+    \item \texttt{docs/project\_report.pdf}: detailed final report;
+    \item \texttt{docs/OpenAlex\_DBMS\_Comparison\_Sapienza.pptx}: presentation deck;
+    \item \texttt{README.md}: run instructions and demo instructions;
+    \item \texttt{src/}: data collection, benchmark, and chart generation scripts;
+    \item \texttt{database/postgres/}: PostgreSQL schema, load script, and SQL queries;
+    \item \texttt{database/neo4j/}: Neo4j constraints, import script, and Cypher queries;
+    \item \texttt{benchmarks/results/benchmark\_results.csv}: raw benchmark measurements.
 \end{itemize}
 
 \section{Conclusion}
