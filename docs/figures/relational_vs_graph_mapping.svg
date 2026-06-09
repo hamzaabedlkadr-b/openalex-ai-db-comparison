@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Relational vs Graph Mapping</title>
+  <desc id="desc">Diagram comparing the PostgreSQL relational schema with the Neo4j graph model for the same OpenAlex dataset.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .title { font-family: Arial, sans-serif; font-size: 48px; font-weight: 700; fill: #111827; }
+      .subtitle { font-family: Arial, sans-serif; font-size: 24px; fill: #4b5563; }
+      .panel-title { font-family: Arial, sans-serif; font-size: 32px; font-weight: 700; fill: #822433; }
+      .label { font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #111827; }
+      .small { font-family: Arial, sans-serif; font-size: 19px; fill: #374151; }
+      .table { fill: #ffffff; stroke: #9ca3af; stroke-width: 2.5; }
+      .bridge { fill: #f8fafc; stroke: #822433; stroke-width: 2.5; }
+      .node { fill: #ffffff; stroke: #822433; stroke-width: 4; }
+      .edge { stroke: #374151; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .connector { stroke: #6b7280; stroke-width: 3; fill: none; stroke-dasharray: 9 8; marker-end: url(#arrow-gray); }
+      .caption { font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #111827; }
+      .note { font-family: Arial, sans-serif; font-size: 20px; fill: #4b5563; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#374151"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="900"/>
+
+  <text class="title" x="800" y="72" text-anchor="middle">Relational vs Graph Mapping</text>
+  <text class="subtitle" x="800" y="112" text-anchor="middle">Same OpenAlex data, represented with two different database models</text>
+
+  <line x1="800" y1="155" x2="800" y2="770" stroke="#e5e7eb" stroke-width="3"/>
+
+  <text class="panel-title" x="400" y="185" text-anchor="middle">PostgreSQL Relational Model</text>
+  <text class="panel-title" x="1200" y="185" text-anchor="middle">Neo4j Graph Model</text>
+
+  <!-- Relational side -->
+  <rect class="table" x="105" y="265" width="190" height="70" rx="6"/>
+  <text class="label" x="200" y="308" text-anchor="middle">authors</text>
+
+  <rect class="bridge" x="335" y="265" width="230" height="70" rx="6"/>
+  <text class="label" x="450" y="308" text-anchor="middle">paper_authors</text>
+
+  <rect class="table" x="605" y="265" width="190" height="70" rx="6"/>
+  <text class="label" x="700" y="308" text-anchor="middle">papers</text>
+
+  <rect class="bridge" x="335" y="445" width="230" height="70" rx="6"/>
+  <text class="label" x="450" y="488" text-anchor="middle">paper_topics</text>
+
+  <rect class="table" x="105" y="445" width="190" height="70" rx="6"/>
+  <text class="label" x="200" y="488" text-anchor="middle">topics</text>
+
+  <rect class="bridge" x="605" y="445" width="190" height="70" rx="6"/>
+  <text class="label" x="700" y="488" text-anchor="middle">citations</text>
+
+  <path class="connector" d="M295 300 H335"/>
+  <path class="connector" d="M565 300 H605"/>
+  <path class="connector" d="M295 480 H335"/>
+  <path class="connector" d="M565 480 H605"/>
+  <path class="connector" d="M700 445 V335"/>
+
+  <text class="caption" x="450" y="610" text-anchor="middle">Relationships are reconstructed through joins</text>
+  <text class="note" x="450" y="648" text-anchor="middle">Bridge tables connect papers, authors, topics, and citations.</text>
+
+  <!-- Graph side -->
+  <circle class="node" cx="990" cy="305" r="66"/>
+  <text class="label" x="990" y="313" text-anchor="middle">Author</text>
+
+  <circle class="node" cx="1210" cy="305" r="66"/>
+  <text class="label" x="1210" y="313" text-anchor="middle">Paper</text>
+
+  <circle class="node" cx="1430" cy="305" r="66"/>
+  <text class="label" x="1430" y="313" text-anchor="middle">Paper</text>
+
+  <circle class="node" cx="1210" cy="515" r="66"/>
+  <text class="label" x="1210" y="523" text-anchor="middle">Topic</text>
+
+  <path class="edge" d="M1056 305 H1134"/>
+  <text class="small" x="1095" y="278" text-anchor="middle">AUTHORED</text>
+
+  <path class="edge" d="M1276 305 H1354"/>
+  <text class="small" x="1315" y="278" text-anchor="middle">CITES</text>
+
+  <path class="edge" d="M1210 371 V439"/>
+  <text class="small" x="1284" y="415" text-anchor="middle">HAS_TOPIC</text>
+
+  <text class="caption" x="1200" y="610" text-anchor="middle">Relationships are stored as first-class edges</text>
+  <text class="note" x="1200" y="648" text-anchor="middle">Cypher follows paths directly through the graph.</text>
+
+  <!-- Bottom equivalence statement -->
+  <rect x="175" y="735" width="1250" height="82" rx="8" fill="#f9fafb" stroke="#d1d5db" stroke-width="2"/>
+  <text class="caption" x="800" y="770" text-anchor="middle">Key idea</text>
+  <text class="note" x="800" y="801" text-anchor="middle">Both models contain the same logical dataset; the difference is how relationships are represented and queried.</text>
+</svg>
