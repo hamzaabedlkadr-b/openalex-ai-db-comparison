@@ -872,38 +872,63 @@ Important limitations:
 
 \section{Step 10: Benchmark Results}
 
-The main result:
+The benchmark result should be read in two layers:
 
 \begin{itemize}
-    \item PostgreSQL was faster on 10 out of 11 queries.
-    \item Neo4j was faster on 1 query: author citation network.
-    \item A supplemental graph-focused workload adds 7 extra query pairs.
-    \item In the supplemental workload, Neo4j wins 2 more graph/network queries.
+    \item \textbf{Main workload}: PostgreSQL was faster on 10 out of 11 query pairs; Neo4j was faster on the author citation network query.
+    \item \textbf{Supplemental graph-focused workload}: we added 7 extra query pairs to test more graph-shaped questions.
+    \item \textbf{Combined}: PostgreSQL wins 15/18 total pairs; Neo4j wins 3 graph/network pairs.
+    \item The point is not that the systems are tied; the point is that the winner depends on the query shape.
 \end{itemize}
 
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{|p{0.45\textwidth}|r|r|l|}
+\scriptsize
+\begin{longtable}{|p{0.34\textwidth}|p{0.16\textwidth}|r|r|p{0.12\textwidth}|}
+\caption{Combined benchmark results: main workload plus graph-focused supplemental workload}\\
 \hline
-\textbf{Query} & \textbf{PostgreSQL ms} & \textbf{Neo4j ms} & \textbf{Faster} \\
+\textbf{Query} & \textbf{Workload} & \textbf{PostgreSQL ms} & \textbf{Neo4j ms} & \textbf{Faster} \\
 \hline
-Most cited papers & 0.058 & 4.200 & PostgreSQL \\
-Top authors & 2.422 & 8.600 & PostgreSQL \\
-Top topics & 4.762 & 15.200 & PostgreSQL \\
-Author collaboration & 44.358 & 65.000 & PostgreSQL \\
-Citation links & 0.183 & 4.400 & PostgreSQL \\
-RAG-related papers & 3.515 & 8.600 & PostgreSQL \\
-Two-hop citation paths & 1.577 & 8.400 & PostgreSQL \\
-Shared topics & 309.447 & 586.600 & PostgreSQL \\
-Shared references & 2.171 & 7.800 & PostgreSQL \\
-Paths up to 3 hops & 5.104 & 12.400 & PostgreSQL \\
-Author citation network & 48.214 & 37.400 & Neo4j \\
+\endfirsthead
 \hline
-\end{tabular}
-\caption{Average benchmark results}
-\end{table}
-
+\textbf{Query} & \textbf{Workload} & \textbf{PostgreSQL ms} & \textbf{Neo4j ms} & \textbf{Faster} \\
+\hline
+\endhead
+Most cited papers & Main & 0.058 & 4.200 & PostgreSQL \\
+\hline
+Top authors & Main & 2.422 & 8.600 & PostgreSQL \\
+\hline
+Top topics & Main & 4.762 & 15.200 & PostgreSQL \\
+\hline
+Author collaboration & Main & 44.358 & 65.000 & PostgreSQL \\
+\hline
+Citation links & Main & 0.183 & 4.400 & PostgreSQL \\
+\hline
+RAG-related papers & Main & 3.515 & 8.600 & PostgreSQL \\
+\hline
+Two-hop citation paths & Main & 1.577 & 8.400 & PostgreSQL \\
+\hline
+Shared topics & Main & 309.447 & 586.600 & PostgreSQL \\
+\hline
+Shared references & Main & 2.171 & 7.800 & PostgreSQL \\
+\hline
+Paths up to 3 hops & Main & 5.104 & 12.400 & PostgreSQL \\
+\hline
+Author citation network & Main & 48.214 & 37.400 & Neo4j \\
+\hline
+Anchored author citation neighborhood & Graph-focused & 0.456 & 1.400 & PostgreSQL \\
+\hline
+Paper citation neighborhood within two hops & Graph-focused & 0.441 & 2.800 & PostgreSQL \\
+\hline
+Paper context subgraph & Graph-focused & 0.605 & 4.600 & PostgreSQL \\
+\hline
+Topic-to-author neighborhood & Graph-focused & 0.694 & 2.600 & PostgreSQL \\
+\hline
+Topic-filtered author citation network & Graph-focused & 0.563 & 3.800 & PostgreSQL \\
+\hline
+Two-hop author citation network & Graph-focused & 43.028 & 39.200 & Neo4j \\
+\hline
+Author citation with shared paper topic & Graph-focused & 783.048 & 338.000 & Neo4j \\
+\hline
+\end{longtable}
 \normalsize
 
 \subsection{Supplemental Graph-Focused Benchmark}
@@ -919,33 +944,6 @@ The purpose is to answer a fair question:
 \begin{quote}
 If the original workload mostly favors PostgreSQL-style tabular analysis, what happens when we add more graph-shaped questions?
 \end{quote}
-
-The supplemental results are:
-
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{|p{0.45\textwidth}|r|r|l|}
-\hline
-\textbf{Query} & \textbf{PostgreSQL ms} & \textbf{Neo4j ms} & \textbf{Faster} \\
-\hline
-Anchored author citation neighborhood & 0.456 & 1.400 & PostgreSQL \\
-\hline
-Paper citation neighborhood within two hops & 0.441 & 2.800 & PostgreSQL \\
-\hline
-Paper context subgraph & 0.605 & 4.600 & PostgreSQL \\
-\hline
-Topic-to-author neighborhood & 0.694 & 2.600 & PostgreSQL \\
-\hline
-Topic-filtered author citation network & 0.563 & 3.800 & PostgreSQL \\
-\hline
-Two-hop author citation network & 43.028 & 39.200 & Neo4j \\
-\hline
-Author citation with shared paper topic & 783.048 & 338.000 & Neo4j \\
-\hline
-\end{tabular}
-\caption{Supplemental graph-focused benchmark}
-\end{table}
 
 How to explain this:
 
