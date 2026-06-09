@@ -79,6 +79,7 @@ The current benchmark shows that PostgreSQL is faster on most queries for this s
 Neo4j is faster on the author citation network query, where the traversal follows a natural author-to-paper-to-paper-to-author graph pattern.
 To strengthen the evaluation, an additional graph-focused workload was also added.
 This supplemental workload shows that Neo4j gains further advantages when the query combines multi-hop citation traversal with network-style relationship constraints.
+In the graph-focused workload, Neo4j wins 4 out of 9 query pairs.
 The broader conclusion is that PostgreSQL is very efficient for tabular analysis, while Neo4j is often clearer and more direct for graph-shaped questions.
 
 \section{Project Goal and Research Questions}
@@ -695,6 +696,7 @@ benchmarks/graph_focused_queries.json
 
 This second workload does not replace the original benchmark.
 It is used to test whether Neo4j becomes more competitive when the questions are more explicitly graph-shaped.
+It now contains 9 graph-focused query pairs.
 The measured results are saved in:
 
 \begin{verbatim}
@@ -729,18 +731,37 @@ Two-hop author citation network & 43.028 & 39.200 & Neo4j \\
 \hline
 Author citation with shared paper topic & 783.048 & 338.000 & Neo4j \\
 \hline
+Three-hop author citation network & 161.876 & 131.000 & Neo4j \\
+\hline
+Two-hop author citation with shared topic & 375.604 & 225.400 & Neo4j \\
+\hline
 \end{longtable}
 \normalsize
 \setlength{\tabcolsep}{6pt}
 
 The supplemental workload gives a more nuanced result.
 PostgreSQL still wins the small anchored neighborhood queries because the dataset is small and indexed relational lookups are extremely cheap.
-However, Neo4j wins two more network-style queries:
+However, Neo4j wins four network-style queries:
 
 \begin{itemize}
     \item \textbf{Two-hop author citation network}: Neo4j averages 39.200 ms versus PostgreSQL's 43.028 ms.
     \item \textbf{Author citation with shared paper topic}: Neo4j averages 338.000 ms versus PostgreSQL's 783.048 ms.
+    \item \textbf{Three-hop author citation network}: Neo4j averages 131.000 ms versus PostgreSQL's 161.876 ms.
+    \item \textbf{Two-hop author citation with shared topic}: Neo4j averages 225.400 ms versus PostgreSQL's 375.604 ms.
 \end{itemize}
+
+\begin{center}
+\refstepcounter{figure}\label{fig:graph-focused-win-summary}
+\textbf{Figure \thefigure: Supplemental graph-focused workload win summary}
+
+\vspace{0.4em}
+\begin{tabular}{p{0.25\textwidth}p{0.45\textwidth}p{0.16\textwidth}}
+\textbf{System} & \textbf{Wins} & \textbf{Count} \\
+\hline
+PostgreSQL & \pgbar{25} & 5 queries \\
+Neo4j & \neobar{20} & 4 queries \\
+\end{tabular}
+\end{center}
 
 This improves the interpretation of Neo4j's role in the project.
 Neo4j is not faster for every graph-looking query.
@@ -903,7 +924,7 @@ This distinction is important because the evaluation criteria are different.
     \item PostgreSQL and Neo4j were loaded with matching entity and relationship counts.
     \item PostgreSQL was faster on 10 out of 11 benchmarked queries.
     \item Neo4j was faster on the author citation network query.
-    \item A supplemental graph-focused workload added two more Neo4j wins on multi-hop/network-style queries.
+    \item A supplemental graph-focused workload added four more Neo4j wins on multi-hop/network-style queries.
     \item Neo4j query syntax is often more natural for relationship traversal.
     \item PostgreSQL is highly efficient for relational aggregation and sorting.
     \item The most useful comparison is not only speed, but also modeling clarity and query expressiveness.
@@ -914,7 +935,7 @@ This distinction is important because the evaluation criteria are different.
 \begin{itemize}
     \item The dataset is a selected subset, not the full OpenAlex dataset.
     \item Benchmark results were produced on a local machine and depend on local hardware.
-    \item The main benchmark contains 11 queries, plus a smaller supplemental graph-focused workload.
+    \item The main benchmark contains 11 queries, plus a 9-query supplemental graph-focused workload.
     \item The benchmark focuses on server-reported query time, not full application-level latency.
     \item The Neo4j model uses the basic graph database; advanced graph data science projections were not used.
 \end{itemize}
@@ -951,7 +972,7 @@ This project demonstrates a practical comparison between PostgreSQL and Neo4j us
 The relational model is efficient and structured, while the graph model is expressive and natural for relationship-heavy analysis.
 
 The current results show PostgreSQL as faster for most queries on the small benchmark dataset, but Neo4j provides clearer graph traversal semantics and outperforms PostgreSQL on the author citation network query.
-The supplemental graph-focused workload adds two more Neo4j wins, especially when the query combines citation traversal with topic overlap.
+The supplemental graph-focused workload adds four more Neo4j wins, especially when the query combines citation traversal, deeper citation paths, and topic overlap.
 This supports a balanced conclusion: PostgreSQL is a strong choice for structured analytical workloads, while Neo4j becomes especially valuable when the main questions are about relationships, paths, and networks.
 
 \end{document}

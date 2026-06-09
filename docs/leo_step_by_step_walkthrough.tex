@@ -858,7 +858,7 @@ The benchmark is useful, but it should be interpreted carefully.
 It does not prove that PostgreSQL is always better than Neo4j.
 It proves that, for our current dataset, machine, indexes, and query set, PostgreSQL was faster on most measured queries and Neo4j was faster on the author citation network query.
 We later added a supplemental graph-focused workload to test more explicitly graph-shaped questions.
-That extra workload gives Neo4j two additional wins on multi-hop/network-style queries.
+That extra workload gives Neo4j four additional wins on multi-hop/network-style queries.
 
 Important limitations:
 
@@ -876,8 +876,8 @@ The benchmark result should be read in two layers:
 
 \begin{itemize}
     \item \textbf{Main workload}: PostgreSQL was faster on 10 out of 11 query pairs; Neo4j was faster on the author citation network query.
-    \item \textbf{Supplemental graph-focused workload}: we added 7 extra query pairs to test more graph-shaped questions.
-    \item \textbf{Combined}: PostgreSQL wins 15/18 total pairs; Neo4j wins 3 graph/network pairs.
+    \item \textbf{Supplemental graph-focused workload}: we added 9 extra query pairs to test more graph-shaped questions.
+    \item \textbf{Combined}: PostgreSQL wins 15/20 total pairs; Neo4j wins 5 graph/network pairs.
     \item The point is not that the systems are tied; the point is that the winner depends on the query shape.
 \end{itemize}
 
@@ -927,6 +927,10 @@ Topic-filtered author citation network & Graph-focused & 0.563 & 3.800 & Postgre
 Two-hop author citation network & Graph-focused & 43.028 & 39.200 & Neo4j \\
 \hline
 Author citation with shared paper topic & Graph-focused & 783.048 & 338.000 & Neo4j \\
+\hline
+Three-hop author citation network & Graph-focused & 161.876 & 131.000 & Neo4j \\
+\hline
+Two-hop author citation with shared topic & Graph-focused & 375.604 & 225.400 & Neo4j \\
 \hline
 \end{longtable}
 \normalsize
@@ -1268,7 +1272,7 @@ Leo should focus on these five ideas:
     \item \textbf{ETL story}: raw API data was cleaned and normalized into CSV files.
     \item \textbf{Modeling story}: PostgreSQL uses tables and joins; Neo4j uses nodes and relationships.
     \item \textbf{Benchmark story}: we used equivalent SQL/Cypher queries and measured average execution time.
-    \item \textbf{Conclusion story}: PostgreSQL was better for most structured tabular queries in the main benchmark; Neo4j was faster for the author citation network query and two additional supplemental graph/network queries.
+    \item \textbf{Conclusion story}: PostgreSQL was better for most structured tabular queries in the main benchmark; Neo4j was faster for the author citation network query and four additional supplemental graph/network queries.
 \end{enumerate}
 
 \subsection{Suggested Presentation Split}
@@ -1350,7 +1354,7 @@ The important thing is that both members can answer general questions.
 \hline
 21 & Course Connection: Scope Choices & Explain why we did not present this as RDF or data warehousing. It is a DBMS comparison. \\
 \hline
-22 & Supplemental Benchmark: Graph-Focused Workload & Explain that we added 7 extra graph-focused query pairs. PostgreSQL still wins small anchored lookups, but Neo4j wins two additional network-style queries. \\
+22 & Supplemental Benchmark: Graph-Focused Workload & Explain that we added 9 extra graph-focused query pairs. PostgreSQL still wins small anchored lookups, but Neo4j wins four additional network-style queries. \\
 \hline
 \end{longtable}
 

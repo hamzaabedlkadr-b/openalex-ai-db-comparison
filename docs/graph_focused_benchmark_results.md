@@ -1,6 +1,6 @@
 # Benchmark Results
 
-Generated at: 2026-06-08 12:26:37
+Generated at: 2026-06-09 14:37:37
 
 ## Methodology
 
@@ -16,6 +16,10 @@ This is a supplemental workload focused on graph-shaped questions.
 It does not replace the original 11-query benchmark.
 Its purpose is to test whether Neo4j becomes more competitive when queries involve anchored neighborhoods, multi-hop citation traversal, and combinations of authorship, citation, and topic relationships.
 
+The supplemental workload now contains 9 graph-focused query pairs.
+PostgreSQL is faster on 5 small or selective graph-neighborhood queries.
+Neo4j is faster on 4 network-style queries where the query follows longer citation paths or combines citation traversal with topic overlap.
+
 | Query | PostgreSQL avg ms | Neo4j avg ms | Faster system | Notes |
 |---|---:|---:|---|---|
 | Anchored author citation neighborhood | 0.456 | 1.400 | PostgreSQL | Starting from one author, find other authors reached through citations from that author's papers. |
@@ -25,6 +29,8 @@ Its purpose is to test whether Neo4j becomes more competitive when queries invol
 | Topic-filtered author citation network | 0.563 | 3.800 | PostgreSQL | Find author citation relationships where the citing paper belongs to a selected topic. |
 | Two-hop author citation network | 43.028 | 39.200 | Neo4j | Find authors connected through two consecutive paper citation hops. |
 | Author citation with shared paper topic | 783.048 | 338.000 | Neo4j | Find author citation relationships where the citing and cited papers share at least one OpenAlex topic. |
+| Three-hop author citation network | 161.876 | 131.000 | Neo4j | Find author pairs connected through citation paths up to three paper-to-paper hops. |
+| Two-hop author citation with shared topic | 375.604 | 225.400 | Neo4j | Find author citation paths where a citing paper reaches a target paper in two citation hops and both endpoint papers share a topic. |
 
 ## Detailed Statistics
 
@@ -44,6 +50,10 @@ Its purpose is to test whether Neo4j becomes more competitive when queries invol
 | Two-hop author citation network | Neo4j | 39.200 | 41.000 | 30.000 | 48.000 |
 | Author citation with shared paper topic | PostgreSQL | 783.048 | 572.200 | 436.926 | 1500.757 |
 | Author citation with shared paper topic | Neo4j | 338.000 | 293.000 | 235.000 | 570.000 |
+| Three-hop author citation network | PostgreSQL | 161.876 | 137.894 | 118.685 | 259.070 |
+| Three-hop author citation network | Neo4j | 131.000 | 116.000 | 94.000 | 203.000 |
+| Two-hop author citation with shared topic | PostgreSQL | 375.604 | 357.854 | 343.802 | 462.402 |
+| Two-hop author citation with shared topic | Neo4j | 225.400 | 219.000 | 177.000 | 317.000 |
 
 ## Execution Diagnostics
 
@@ -55,7 +65,9 @@ Its purpose is to test whether Neo4j becomes more competitive when queries invol
 | Topic-to-author neighborhood | 1.602 | 400 | Topic anchor is selective, so PostgreSQL joins remain inexpensive. |
 | Topic-filtered author citation network | 5.772 | 8 | Very selective topic filter; both systems touch little data. |
 | Two-hop author citation network | 4.080 | 53413 | Multi-hop author citation traversal; Neo4j becomes slightly faster. |
-| Author citation with shared paper topic | 105.423 | 823447 | Most network-shaped supplemental query; PostgreSQL pays high join/planning cost, while Neo4j follows stored relationships directly. |
+| Author citation with shared paper topic | 105.423 | 823447 | Network-shaped query; PostgreSQL pays high join/planning cost, while Neo4j follows stored relationships directly. |
+| Three-hop author citation network | 1.966 | 75205 | Deeper citation traversal from authors through papers; Neo4j benefits from direct variable-length relationship traversal. |
+| Two-hop author citation with shared topic | 105.543 | 687842 | Combines citation traversal with topic overlap; PostgreSQL reconstructs the path through several bridge-table joins. |
 
 ## Interpretation Notes
 
@@ -68,6 +80,6 @@ The supplemental workload improves the original analysis in two ways:
 - Small anchored graph-neighborhood queries are still faster in PostgreSQL because the dataset is small and indexed relational lookups are extremely cheap.
 - Neo4j wins the more network-like queries that require multi-hop traversal or combine several relationship types.
 
-The strongest Neo4j result is `Author citation with shared paper topic`.
-That query combines `AUTHORED`, `CITES`, and `HAS_TOPIC` relationships.
-PostgreSQL must reconstruct the same pattern through several bridge-table joins, while Neo4j expresses it directly as a graph path.
+The strongest Neo4j results are the author citation queries with topic overlap and deeper citation paths.
+Those queries combine `AUTHORED`, `CITES`, and `HAS_TOPIC` relationships.
+PostgreSQL must reconstruct the same patterns through several bridge-table joins, while Neo4j expresses them directly as graph paths.

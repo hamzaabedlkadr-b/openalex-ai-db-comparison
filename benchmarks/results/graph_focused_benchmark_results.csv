@@ -69,3 +69,23 @@ g7_author_citation_with_shared_topic,Author citation with shared paper topic,Pos
 g7_author_citation_with_shared_topic,Author citation with shared paper topic,Neo4j,4,235.000,,823447
 g7_author_citation_with_shared_topic,Author citation with shared paper topic,PostgreSQL,5,461.866,90.843,
 g7_author_citation_with_shared_topic,Author citation with shared paper topic,Neo4j,5,293.000,,823447
+g8_three_hop_author_citation_network,Three-hop author citation network,PostgreSQL,1,259.070,2.652,
+g8_three_hop_author_citation_network,Three-hop author citation network,Neo4j,1,203.000,,75205
+g8_three_hop_author_citation_network,Three-hop author citation network,PostgreSQL,2,157.797,2.474,
+g8_three_hop_author_citation_network,Three-hop author citation network,Neo4j,2,116.000,,75205
+g8_three_hop_author_citation_network,Three-hop author citation network,PostgreSQL,3,135.933,1.389,
+g8_three_hop_author_citation_network,Three-hop author citation network,Neo4j,3,104.000,,75205
+g8_three_hop_author_citation_network,Three-hop author citation network,PostgreSQL,4,137.894,1.652,
+g8_three_hop_author_citation_network,Three-hop author citation network,Neo4j,4,138.000,,75205
+g8_three_hop_author_citation_network,Three-hop author citation network,PostgreSQL,5,118.685,1.664,
+g8_three_hop_author_citation_network,Three-hop author citation network,Neo4j,5,94.000,,75205
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,PostgreSQL,1,359.391,94.919,
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,Neo4j,1,183.000,,687842
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,PostgreSQL,2,357.854,98.041,
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,Neo4j,2,231.000,,687842
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,PostgreSQL,3,462.402,103.062,
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,Neo4j,3,219.000,,687842
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,PostgreSQL,4,343.802,146.541,
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,Neo4j,4,317.000,,687842
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,PostgreSQL,5,354.571,85.152,
+g9_two_hop_author_citation_with_shared_topic,Two-hop author citation with shared topic,Neo4j,5,177.000,,687842

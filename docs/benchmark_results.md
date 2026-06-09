@@ -80,5 +80,5 @@ The dataset is intentionally small, and query performance depends on data size, 
 The most useful project conclusion is not only which system is faster, but also which query is simpler and more natural to express.
 
 A supplemental graph-focused workload is available in `docs/graph_focused_benchmark_results.md`.
-That extra workload keeps the original benchmark unchanged, but adds graph-shaped queries involving anchored neighborhoods, two-hop author citation paths, and citation relationships constrained by shared topics.
-In the supplemental workload, Neo4j wins two additional network-style queries.
+That extra workload keeps the original benchmark unchanged, but adds 9 graph-shaped queries involving anchored neighborhoods, multi-hop author citation paths, and citation relationships constrained by shared topics.
+In the supplemental workload, Neo4j wins 4 network-style queries.

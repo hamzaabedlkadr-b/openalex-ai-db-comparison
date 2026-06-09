@@ -229,7 +229,7 @@ Benchmark result summary:
 - PostgreSQL was faster on 10 of 11 queries.
 - Neo4j was faster on the author citation network query.
 - A supplemental graph-focused workload is included in `benchmarks/graph_focused_queries.json`.
-- In that supplemental workload, Neo4j wins 2 additional network-style queries: two-hop author citation network and author citation with shared paper topic.
+- In that supplemental workload, Neo4j wins 4 additional network-style queries, especially multi-hop author citation paths and citation/topic-overlap queries.
 
 ## Repository Structure
 

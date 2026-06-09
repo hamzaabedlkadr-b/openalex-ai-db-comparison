@@ -306,7 +306,9 @@ Current benchmark summary:
 | Citation paths up to three hops | 5.104 | 12.400 | PostgreSQL |
 | Author citation network | 48.214 | 37.400 | Neo4j |
 
-The benchmark now includes 11 query pairs, including more graph-specific analyses. At the current dataset size, PostgreSQL is faster on most measured queries, especially simple ranking and aggregation queries. Neo4j is faster on the author citation network query, where the query follows a natural author-to-paper-to-paper-to-author graph pattern.
+The main benchmark includes 11 query pairs. At the current dataset size, PostgreSQL is faster on most measured queries, especially simple ranking and aggregation queries. Neo4j is faster on the author citation network query, where the query follows a natural author-to-paper-to-paper-to-author graph pattern.
+
+A supplemental graph-focused workload adds 9 more query pairs in `benchmarks/graph_focused_queries.json`. In that workload, Neo4j wins 4 network-style queries, especially when the query follows multi-hop author citation paths or combines citation traversal with shared topics.
 
 This does not mean one system is always better than the other. The dataset is still small, and performance depends on indexes, cache state, query shape, and graph density. For this project, the strongest conclusion is that PostgreSQL is very efficient for relational aggregation, while Neo4j is often more readable and conceptually direct for graph-shaped analysis.
 
@@ -314,6 +316,7 @@ The detailed benchmark results are documented in:
 
 ```text
 docs/benchmark_results.md
+docs/graph_focused_benchmark_results.md
 ```
 
 Benchmark charts:
